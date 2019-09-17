@@ -1,0 +1,55 @@
+<html>
+	<head>
+		<title>Shooter Camera</title>
+		<style>
+
+
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" height=500 width=500 style="border:1px solid red;">
+		</canvas>
+		<div id="hud">
+			<div id="gun-current"></div>
+			<div id="gun-magazine"></div>
+			<div id="gun-ammunition"></div>
+		</div>
+
+		<audio id="gun-boom">
+			<source src="./2672.mp3" type="audio/mp3">
+		</audio>
+
+		<audio id="gun-reload">
+			<source src="./pistolreloading.mp3" type="audio/mp3">
+		</audio>
+
+		<audio id="shotgun-boom">
+			<source src="./shotgun-firing.mp3" type="audio/mp3">
+		</audio>
+
+		<audio id="shotgun-reload">
+			<source src="./shotgunreload.wav" type="audio/wav">
+		</audio>
+
+		<audio id="assaultrifle-reload">
+			<source src="./assaultriflereload.wav" type="audio/wav">
+		</audio>
+
+		<audio id="uzi-boom">
+			<source src="./uzi-firing.mp3" type="audio/mp3">
+		</audio>
+
+		<script type="text/javascript" src="./player.js"></script>
+		<script type="text/javascript" src="./camera.js"></script>
+		<script type="text/javascript" src="./InputManager.js"></script>
+		<script type="text/javascript" src="./projectile.js"></script>
+		<script type="text/javascript" src="./enemy.js"></script>
+		<script type="text/javascript" src="./SoundManager.js"></script>
+		<script type="text/javascript" src="./gun.js"></script>
+		<script type="text/javascript" src="./game.js"></script>
+
+		<script>
+
+		</script>
+	</body>
+</html>
