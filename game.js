@@ -43,6 +43,10 @@ function Game(context, width, height) {
    this.soundManager.addSound("shotgun-reloading", document.getElementById("shotgun-reload"));
    this.soundManager.addSound("assaultrifle-reloading", document.getElementById("assaultrifle-reload"));
    this.soundManager.addSound("uzi-firing", document.getElementById("uzi-boom"));
+   this.soundManager.addSound("uzi-changing-clips", document.getElementById("uzi-reload1"));
+   this.soundManager.addSound("uzi-cocking", document.getElementById("uzi-reload2"));
+   this.soundManager.addSound("empty-magazine-click", document.getElementById("empty-click"));
+   this.soundManager.addSound("hightech-rifle-reloading", document.getElementById("lazar-reload"));
 
 
    this.border_width = 5;
@@ -50,9 +54,13 @@ function Game(context, width, height) {
 
    this.ticks = 0;
    this.sounds = true
+   this.points = 0
 
    // Enemy array
    this.enemies = [];
+
+   // Crate array
+   this.crates = []
 
 
 
@@ -67,11 +75,23 @@ function Game(context, width, height) {
        // do we create new enemies?
         // create
         if(this.ticks % 60 == 0){
-          var entity = new TriangleEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
+          var entity = new FollowingEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
           entity.moveTowards(this.player.x, this.player.y);
           this.enemies.push( entity );
         }
 
+        if(this.ticks % 600  == 0){
+          var bullet_box = new BulletCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
+          this.crates.push(bullet_box)
+        }
+
+      // update all loot loot crates
+      for(var i = 0; i < this.crates.length; i++){
+        this.crates[i].update(delta)
+        if(this.crates[i].delete){
+          this.crates.splice(i, 1)
+        }
+      }
 
       //update all enemies
       for(var i = 0; i < this.enemies.length; i++){
@@ -86,6 +106,7 @@ function Game(context, width, height) {
       				i--;
               this.player.bullets[j].delete = true;
               j = this.player.bullets.length;
+              this.points = this.points + 100
             } else{
               this.enemies.splice(i, 1);
               i--;
@@ -138,7 +159,12 @@ function Game(context, width, height) {
            this.enemies[i].render(this.ctx);
          }
 
+         for(var i = 0; i < this.crates.length; i++){
+           this.crates[i].render(this.ctx);
+         }
+
          if(this.game_state == "game_over"){
+           this.endPoints()
            this.youDead();
          }else{
            if(this.player.guns[this.player.current_gun_index].bullets_in_magazine == 0){
@@ -153,7 +179,11 @@ function Game(context, width, height) {
              this.reloading();
 
            }
+
+           this.drawPoints();
          }
+
+
 
          this.ctx.restore();
        }
@@ -195,8 +225,15 @@ function Game(context, width, height) {
      this.ctx.font = "900 16px Arial";
      this.ctx.fillStyle = "black"
      var c_pos = this.camera.toWorldCoordinates(200,200);
-     this.ctx.fillText("YOU DEAD", c_pos.x, c_pos.y);
+     this.ctx.fillText("YOU DIED", c_pos.x, c_pos.y);
   }
+
+  this.endPoints = function(){
+    this.ctx.font = "900 16px Arial";
+    this.ctx.fillStyle = "black"
+    var c_pos = this.camera.toWorldCoordinates(218,230);
+    this.ctx.fillText(this.points, c_pos.x, c_pos.y);
+ }
 
   this.needReloading = function(){
     this.ctx.font = "900 16px Arial";
@@ -218,34 +255,39 @@ function Game(context, width, height) {
      var c_pos = this.camera.toWorldCoordinates(195,400);
      this.ctx.fillText("Reloading", c_pos.x, c_pos.y);
    }
+
+   this.drawPoints = function(){
+     this.ctx.font = "900 16px Arial";
+     this.ctx.fillStyle = "black"
+     var c_pos = this.camera.toWorldCoordinates(20,20);
+     this.ctx.fillText(this.points, c_pos.x, c_pos.y);
+   }
 }
 
 window.onkeydown = function(e){
   if(game.game_state == "playing"){
-    if(e.key == "1"){
-      game.player.current_gun_index=0
-      game.player.just_changed_gun = true;
-    } else if(e.key == "2"){
-      game.player.current_gun_index=1
-      game.player.just_changed_gun = true;
-    } else if(e.key == "3"){
-      game.player.current_gun_index=2
-      game.player.just_changed_gun = true;
-    } else if(e.key == "4"){
-      game.player.current_gun_index=3
-      game.player.just_changed_gun = true;
-    } else if(e.key == "5"){
-      game.player.current_gun_index=4
-      game.player.just_changed_gun = true;
-    } else if(e.key == "m"){
-      if(game.sounds == true){
-        game.sounds = false
-      }else{
-        game.sounds = true
-      }
-    }
-  }
-}
+     if(e.key == "m"){
+       if(game.sounds == true){
+         game.sounds = false
+       }else{
+         game.sounds = true
+       }
+     }else if(e.key == " "){
+       if(game.player.guns[game.player.current_gun_index].bullets_in_magazine == 0 && game.player.guns[game.player.current_gun_index].just_indicated_empty == false){
+         game.soundManager.playSound("empty-magazine-click")
+         game.player.guns[game.player.current_gun_index].just_indicated_empty = true
+       }
+     }
+   }
+ }
+
+ window.onkeyup = function(e){
+   if(game.game_state == "playing"){
+     if(e.key == " "){
+       game.player.guns[game.player.current_gun_index].just_indicated_empty = false
+     }
+   }
+ }
 
 
 

@@ -13,6 +13,7 @@
 			<div id="gun-current"></div>
 			<div id="gun-magazine"></div>
 			<div id="gun-ammunition"></div>
+			<div id="player-lives"></div>
 		</div>
 
 		<audio id="gun-boom">
@@ -39,6 +40,22 @@
 			<source src="./uzi-firing.mp3" type="audio/mp3">
 		</audio>
 
+		<audio id="uzi-reload1">
+			<source src="./uzi-changeclip.mp3" type="audio/mp3">
+		</audio>
+
+		<audio id="uzi-reload2">
+			<source src="./uzi-reload.mp3" type="audio/mp3">
+		</audio>
+
+		<audio id="empty-click">
+			<source src="./empty-gun-shot.wav" type="audio/wav">
+		</audio>
+
+		<audio id="lazar-reload">
+			<source src="./lazer-reload.mp3" type="audio/mp3">
+		</audio>
+
 		<script type="text/javascript" src="./player.js"></script>
 		<script type="text/javascript" src="./camera.js"></script>
 		<script type="text/javascript" src="./InputManager.js"></script>
@@ -46,6 +63,7 @@
 		<script type="text/javascript" src="./enemy.js"></script>
 		<script type="text/javascript" src="./SoundManager.js"></script>
 		<script type="text/javascript" src="./gun.js"></script>
+		<script type="text/javascript" src="./crate.js"></script>
 		<script type="text/javascript" src="./game.js"></script>
 
 		<script>

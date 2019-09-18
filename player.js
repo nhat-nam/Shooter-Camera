@@ -72,6 +72,23 @@ function Player(){
 			this.shoot();
 		}
 
+		if(this.inputManager.isKeyDown("1")){
+      this.current_gun_index=0
+      this.just_changed_gun = true;
+    } else if(this.inputManager.isKeyDown("2")){
+      this.current_gun_index=1
+      this.just_changed_gun = true;
+    } else if(this.inputManager.isKeyDown("3")){
+      this.current_gun_index=2
+      this.just_changed_gun = true;
+    } else if(this.inputManager.isKeyDown("4")){
+      this.current_gun_index=3
+      this.just_changed_gun = true;
+    } else if(this.inputManager.isKeyDown("5")){
+      this.current_gun_index=4
+      this.just_changed_gun = true;
+    }
+
   }
 	this.shoot = function(){
 		if(this.canShoot && this.player_gun.canShoot()){

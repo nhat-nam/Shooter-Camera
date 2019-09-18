@@ -94,10 +94,10 @@ class Enemy{
     ctx.restore();
   }
 }
-class TriangleEnemy extends Enemy{
+class FollowingEnemy extends Enemy{
 
   entityUpdate(delta){
-    //change moveTowards destination to player position every two seconds
+    //change moveTowards destination to player position
     if(this.player_x && this.player_y){
         this.moveTowards(this.player_x, this.player_y);
     }
@@ -109,4 +109,20 @@ class TriangleEnemy extends Enemy{
     ctx.restore();
   }
 
+}
+
+class ShooterEnemy extends Enemy{
+  entityUpdate(delta){
+    //stay in range
+
+  }
+
+  render(ctx){
+    ctx.save();
+    ctx.fillStyle = this.fillStyle;
+    ctx.arc(this.x, this.y, this.radius, 0, 360);
+		ctx.fill();
+		ctx.closePath();
+    ctx.restore();
+  }
 }

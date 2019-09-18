@@ -2,13 +2,14 @@ class Gun{
   constructor(){
 
   }
-  ammunition = 48
+  ammunition = 32
   bullets_in_magazine = 16;
   reloadTimer = 0;
   reload_time = 2400;
   capacity = 16;
   shootCooldownTimer = 0
   name = "Handgun";
+  just_indicated_empty = false
   canShoot(){
     /* are we reloading? */
     /* are there bullets in the magazine ? */
@@ -75,7 +76,7 @@ class Gun{
 }
 
 class Shotgun extends Gun{
-    ammunition = 12;
+    ammunition = 9;
     name = "Shotgun";
     capacity = 1;
     bullets_in_magazine = 1;
@@ -114,7 +115,7 @@ class Shotgun extends Gun{
     ammunition = 100;
     name = "Assault Rifle"
     capacity = 50;
-    bullets_in_magazine = 55;
+    bullets_in_magazine = 50;
     reload_time = 3200 ;
 
     reloadSound(){
@@ -135,15 +136,21 @@ class Shotgun extends Gun{
   }
 
   class Uzi extends Gun{
-    ammunition = 90
+    ammunition = 70
     name = "Uzi"
-    capacity = 30;
-    bullets_in_magazine = 30;
-    reload_time = 460;
+    capacity = 35;
+    bullets_in_magazine = 35;
+    reload_time = 3000;
 
     shootSound(){
       if(game.sounds == true){
-        game.soundManager.playSound("uzi-firing")
+
+      }
+    }
+    reloadSound(){
+      if(game.sounds == true){
+        game.soundManager.playSound("uzi-changing-clips")
+        game.soundManager.playSound("uzi-cocking")
       }
     }
     shoot(x, y, angle, init_dx, init_dy){
@@ -162,7 +169,14 @@ class Shotgun extends Gun{
     name = "High-Tech Rifle"
     capacity = 65;
     bullets_in_magazine = 65;
-    reload_time = 260;
+    reload_time = 2300;
+
+    reloadSound(){
+      if(game.sounds == true){
+        game.soundManager.playSound("hightech-rifle-reloading")
+      }
+    }
+
     shoot(x, y, angle, init_dx, init_dy){
       var bullets = [];
         var bullet = new Projectile(x, y, angle, init_dx, init_dy);
