@@ -7,14 +7,18 @@ function Player(){
 	this.dy = 0;
 	this.target_dx = 0;
 	this.target_dy = 0;
-	this.tolerance = 15;
-	this.acceleration = 25;
+	this.tolerance = 15;//22.5
+	this.acceleration = 25;//37.5
 	this.radius = 15;
 	this.original_color = "black";
 	this.color = "black";
   this.inputManager = new InputManager(canvas);
 	this.health = 3;
 	this.just_changed_gun = false;
+	this.faster_shooting = false
+	this.buff_timer = 0
+	this.buff_in_progress = false
+	this.faster_moving = false
 
 
 	this.bullets = [];
@@ -42,25 +46,41 @@ function Player(){
     if(this.inputManager.isKeyDown("w")){
       if(this.inputManager.isKeyDown("s")){
         this.target_dy = 0;
-      } else {
-          this.target_dy = -250;
+      }else{
+				if(!this.faster_moving){
+        	this.target_dy = -250;
+				}else{
+					this.target_dy = -375
+				}
       }
-    } else if(this.inputManager.isKeyDown("s")){
-        this.target_dy = 250;
-    } else {
-        this.target_dy = 0;
+    }else if(this.inputManager.isKeyDown("s")){
+			if(!this.faster_moving){
+				this.target_dy = 250;
+			}else{
+				this.target_dy = 375
+			}
+    }else{
+      this.target_dy = 0;
     }
 
     if(this.inputManager.isKeyDown("d")){
       if(this.inputManager.isKeyDown("a")){
         this.target_dx = 0;
-      } else {
-          this.target_dx = 250;
+      }else{
+				if(!this.faster_moving){
+					this.target_dx = 250;
+				}else{
+					this.target_dx = 375
+				}
       }
-    } else if(this.inputManager.isKeyDown("a")){
-        this.target_dx = -250;
-    } else {
-        this.target_dx = 0;
+    }else if(this.inputManager.isKeyDown("a")){
+			if(!this.faster_moving){
+				this.target_dx = -250;
+			}else{
+				this.target_dx = -375
+			}
+    }else{
+      this.target_dx = 0;
     }
 
 		if(this.inputManager.isKeyDown("r")){
@@ -92,7 +112,7 @@ function Player(){
   }
 	this.shoot = function(){
 		if(this.canShoot && this.player_gun.canShoot()){
-      var bullets = this.player_gun.shoot(this.gunX, this.gunY, this.facing_angle, this.dx, this.dy);
+      var bullets = this.guns[this.current_gun_index].shoot(this.gunX, this.gunY, this.facing_angle, this.dx, this.dy);
       for(var i=0;i<bullets.length;i++){
         this.bullets.push(bullets[i]);
       }
@@ -103,6 +123,14 @@ function Player(){
 
 
   this.update = function(delta){
+
+		if(this.faster_moving || this.faster_shooting){
+			console.log("buff")
+		}
+
+		if(this.buff_timer > 0){
+			this.buff_timer -= 1
+		}
 
     this.checkUserInput();
 		if(this.shootCooldownTimer > 0){
@@ -127,54 +155,93 @@ function Player(){
 				}
 			}
 		}
+		//faster shooting buff
+		if(this.buff_timer == 0 && this.faster_shooting && this.buff_in_progress == false){
+			this.buff_timer = 500
+			this.buff_in_progress = true
+		}else if(this.buff_timer == 0 && this.faster_shooting && this.buff_in_progress){
+			this.buff_in_progress = false
+			this.faster_shooting = false
+		}
+
+		//faster speed buff
+		if(this.buff_timer == 0 && this.faster_moving && this.buff_in_progress == false){
+			this.buff_timer = 800
+			this.buff_in_progress = true
+		}else if(this.buff_timer == 0 && this.faster_moving && this.buff_in_progress){
+			this.buff_in_progress = false
+			this.faster_moving = false
+		}
 
 
-			if(this.target_dy == -250){
+
+			if(this.target_dy < 0){
 				if(this.dy > this.target_dy){
-					this.dy -= this.acceleration
+					if(!this.faster_moving){
+						this.dy -= this.acceleration
+					}else{
+						this.dy -= this.acceleration * 1.5
+					}
 				}
-			} else if(this.target_dy == 250){
+			} else if(this.target_dy > 0){
 				if(this.dy < this.target_dy){
-					this.dy += this.acceleration;
+					if(!this.faster_moving){
+						this.dy += this.acceleration
+					}else{
+						this.dy += this.acceleration * 1.5
+					}
 				}
 			} else if(this.target_dy == 0){
 				if(this.dy < 0){
-					this.dy += this.tolerance;
-						if(this.dy >= 0){
-							this.dy = 0;
+					if(!this.faster_moving){
+						this.dy += this.tolerance
+					}else{
+						this.dy += this.tolerance * 1.5
+					}
+					if(this.dy >= 0){
+						this.dy = 0;
 					}
 				} else if(this.dy > 0){
-						this.dy -= this.tolerance;
-							if(this.dy <= 0){
-								this.dy = 0;
+						if(!this.faster_moving){
+							this.dy -= this.tolerance
+						}else{
+							this.dy -= this.tolerance * 1.5
+						}
+						if(this.dy <= 0){
+							this.dy = 0;
 					}
 				}
 			}
 
-			if(this.target_dx == -250){
-				if(this.dx > this.target_dx)
-					this.dx -= this.acceleration;
-			} else if(this.target_dx == 250){
+			if(this.target_dx < 0){
+				if(this.dx > this.target_dx){
+					if(!this.faster_moving){
+						this.dx -= this.acceleration
+					}else{
+						this.dx -= this.acceleration * 1.5
+					}
+				}
+			}else if(this.target_dx > 0){
 				if(this.dx < this.target_dx){
 					this.dx += this.acceleration;
 				}
-			} else if(this.target_dx == 0){
+			}else if(this.target_dx == 0){
 				if(this.dx < 0){
 					this.dx += this.tolerance;
-						if(this.dx >= 0){
-							this.dx = 0;
+					if(this.dx >= 0){
+						this.dx = 0;
 					}
-				} else if(this.dx > 0){
+				}else if(this.dx > 0){
 						this.dx -= this.tolerance;
-							if(this.dx <= 0){
-								this.dx = 0;
+						if(this.dx <= 0){
+							this.dx = 0;
 					}
 				}
 			}
 
 
     //don't allow to pass top border
-    if(this.y - this.radius <= 0){
+    if(this.y - this.radius <= 0 || this.y - this.radius <= game.Bullet){
       if(this.dy < 0) {
         this.dy = 0;
       }

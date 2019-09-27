@@ -14,7 +14,7 @@ function Player(){
 	this.color = "black";
   this.inputManager = new InputManager(canvas);
 
-	this.bullets = [];
+	this.Projectiles = [];
 	this.gun = new Gun()
 
 	this.facing_angle = 0;
@@ -58,10 +58,10 @@ function Player(){
   }
 	this.shoot = function(){
 		if(this.canShoot){
-			// make a new projectile 1 bullet
-			var bullet = new Projectile(this.gunX, this.gunY, this.facing_angle, this.dx, this.dy);
-			var bullet = new Projectile(this.gun)
-			this.bullets.push(bullet);
+			// make a new Projectile 1 Projectile
+			var Projectile = new Projectile(this.gunX, this.gunY, this.facing_angle, this.dx, this.dy);
+			var Projectile = new Projectile(this.gun)
+			this.Projectiles.push(Projectile);
 
 			this.canShoot = false;
 			this.shootCooldownTimer = 0;
@@ -77,12 +77,12 @@ function Player(){
 			this.canShoot = true;
 		}
 
-		if(this.bullets.length > 0){
-			for(var i = 0; i < this.bullets.length; i++){
-				this.bullets[i].update(delta)
-				if(this.bullets[i].delete){
-					//delete the bullet
-					this.bullets.splice(i, 1);
+		if(this.Projectiles.length > 0){
+			for(var i = 0; i < this.Projectiles.length; i++){
+				this.Projectiles[i].update(delta)
+				if(this.Projectiles[i].delete){
+					//delete the Projectile
+					this.Projectiles.splice(i, 1);
 					i--;
 				}
 			}
@@ -210,11 +210,11 @@ function Player(){
 		ctx.fill();
 		ctx.restore();
 
-		// draw bullets
+		// draw Projectiles
 		ctx.save();
-		if(this.bullets.length > 0){
-			for(var i = 0; i < this.bullets.length; i++){
-				this.bullets[i].render(ctx);
+		if(this.Projectiles.length > 0){
+			for(var i = 0; i < this.Projectiles.length; i++){
+				this.Projectiles[i].render(ctx);
 			}
 
 		}

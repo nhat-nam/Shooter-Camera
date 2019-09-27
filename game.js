@@ -47,6 +47,8 @@ function Game(context, width, height) {
    this.soundManager.addSound("uzi-cocking", document.getElementById("uzi-reload2"));
    this.soundManager.addSound("empty-magazine-click", document.getElementById("empty-click"));
    this.soundManager.addSound("hightech-rifle-reloading", document.getElementById("lazar-reload"));
+   this.soundManager.addSound("hightech-rifle-firing", document.getElementById("lazar-boom"));
+   this.soundManager.addSound("death-by-lazer", document.getElementById("lazar-dead"));
 
 
    this.border_width = 5;
@@ -55,12 +57,16 @@ function Game(context, width, height) {
    this.ticks = 0;
    this.sounds = true
    this.points = 0
+   this.indicating = false
 
    // Enemy array
    this.enemies = [];
 
    // Crate array
    this.crates = []
+
+   //Texts array
+   this.texts = []
 
 
 
@@ -74,16 +80,31 @@ function Game(context, width, height) {
 
        // do we create new enemies?
         // create
-        if(this.ticks % 60 == 0){
+
+        /*if(this.ticks % 70 == 0){
           var entity = new FollowingEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
           entity.moveTowards(this.player.x, this.player.y);
           this.enemies.push( entity );
-        }
+        }*/
 
-        if(this.ticks % 600  == 0){
-          var bullet_box = new BulletCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
+
+        if(this.ticks % 1500  == 0){
+          var bullet_box = new BulletCrate(Math.random() * WIDTH , Math.random() * HEIGHT)
           this.crates.push(bullet_box)
         }
+
+        if(this.ticks % 3000  == 0){
+          var buff_box = new BuffCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
+          this.crates.push(buff_box)
+        }
+
+      // update all loot loot crates
+      for(var i = 0; i < this.texts.length; i++){
+        this.texts[i].update(delta)
+        if(this.texts[i].delete){
+          this.texts.splice(i, 1)
+        }
+      }
 
       // update all loot loot crates
       for(var i = 0; i < this.crates.length; i++){
@@ -101,17 +122,23 @@ function Game(context, width, height) {
         //check if a bullet hits this enemy
         for(var j = 0; j < this.player.bullets.length; j++){
           if(!this.player.bullets[j].delete && enemy.intersects( this.player.bullets[j] )){
-            if(this.player.current_gun_index != 5){
+            if(this.player.current_gun_index != 4){
               this.enemies.splice(i, 1);
       				i--;
               this.player.bullets[j].delete = true;
               j = this.player.bullets.length;
-              this.points = this.points + 100
             } else{
               this.enemies.splice(i, 1);
               i--;
               j = this.player.bullets.length;
+              this.soundManager.playSound("death-by-lazer")
             }
+              this.points = this.points + 100
+          }
+        }
+
+        if(this.player.just_changed_gun){
+          if(this.player.current_gun_index == 0){
           }
         }
 
@@ -154,15 +181,19 @@ function Game(context, width, height) {
      this.player.render(this.ctx);
 
          // render the bad guys
-
          for(var i = 0; i < this.enemies.length; i++){
            this.enemies[i].render(this.ctx);
          }
 
+         //render the crates
          for(var i = 0; i < this.crates.length; i++){
            this.crates[i].render(this.ctx);
          }
 
+         //render the texts
+         for(var i = 0; i < this.texts.length; i++){
+           this.texts[i].render(this.ctx);
+         }
          if(this.game_state == "game_over"){
            this.endPoints()
            this.youDead();
@@ -170,17 +201,35 @@ function Game(context, width, height) {
            if(this.player.guns[this.player.current_gun_index].bullets_in_magazine == 0){
              if(this.player.guns[this.player.current_gun_index].ammunition > 0){
                this.needReloading();
+               if(this.indicating == false){
+                 this.indicating = true
+               }
              }else{
                this.outOfBullets();
+               if(this.indicating == false){
+                 this.indicating = true
+               }
              }
+           }else{
+             this.indicating = false
            }
 
            if(this.player.guns[this.player.current_gun_index].reloadTimer > 0){
              this.reloading();
-
+             if(this.indicating == false){
+               this.indicating = true
+             }
            }
 
            this.drawPoints();
+
+           if(game.player.faster_shooting){
+             var text = new StableText(200, 100, "Faster Shooting", 500, "black")
+             this.texts.push(text)
+           }else if(game.player.faster_moving){
+             var text = new StableText(200, 100, "Faster Moving", 1000, "black")
+             this.texts.push(text)
+           }
          }
 
 
@@ -273,7 +322,7 @@ window.onkeydown = function(e){
          game.sounds = true
        }
      }else if(e.key == " "){
-       if(game.player.guns[game.player.current_gun_index].bullets_in_magazine == 0 && game.player.guns[game.player.current_gun_index].just_indicated_empty == false){
+       if(game.player.guns[game.player.current_gun_index].bullets_in_magazine == 0 && game.player.guns[game.player.current_gun_index].just_indicated_empty == false && game.sounds){
          game.soundManager.playSound("empty-magazine-click")
          game.player.guns[game.player.current_gun_index].just_indicated_empty = true
        }

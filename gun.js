@@ -38,11 +38,11 @@ class Gun{
   }
   reload(){
     if(this.bullets_in_magazine < this.capacity && this.ammunition > 0){
+      this.reloadTimer = this.reload_time;
+      this.reloadSound();
       var difference = this.capacity - this.bullets_in_magazine;
       this.bullets_in_magazine += Math.min(difference, this.ammunition);
       this.ammunition = Math.max(0, this.ammunition-difference);
-      this.reloadTimer = this.reload_time;
-      this.reloadSound();
     }
   }
   shoot(x, y, angle, init_dx, init_dy){
@@ -50,7 +50,11 @@ class Gun{
       var bullet = new Projectile(x, y, angle, init_dx, init_dy);
       bullets.push(bullet);
       this.bullets_in_magazine -= 1
-      this.shootCooldownTimer = 500
+      if(game.player.faster_shooting){
+        this.shootCooldownTimer = 400
+      }else{
+        this.shootCooldownTimer = 500
+      }
       this.shootSound();
       return bullets;
 
@@ -105,7 +109,6 @@ class Shotgun extends Gun{
         bullets.push(bullet);
       }
       this.bullets_in_magazine -= 1
-      this.shootCooldownTimer = 2000
       this.shootSound();
       return bullets;
     }
@@ -116,7 +119,8 @@ class Shotgun extends Gun{
     name = "Assault Rifle"
     capacity = 50;
     bullets_in_magazine = 50;
-    reload_time = 3200 ;
+    reload_time = 3200;
+
 
     reloadSound(){
       if(game.sounds == true){
@@ -124,12 +128,18 @@ class Shotgun extends Gun{
 
       }
     }
+
     shoot(x, y, angle, init_dx, init_dy){
       var bullets = [];
         var bullet = new Projectile(x, y, angle, init_dx, init_dy);
         bullets.push(bullet);
         this.bullets_in_magazine -= 1
-        this.shootCooldownTimer = 110
+        if(game.player.faster_shooting){
+          this.shootCooldownTimer = 88
+        }else{
+          this.shootCooldownTimer = 110
+
+        }
         return bullets;
 
     }
@@ -140,7 +150,7 @@ class Shotgun extends Gun{
     name = "Uzi"
     capacity = 35;
     bullets_in_magazine = 35;
-    reload_time = 3000;
+    reload_time = 1000;
 
     shootSound(){
       if(game.sounds == true){
@@ -158,22 +168,31 @@ class Shotgun extends Gun{
         var bullet = new Projectile(x, y, angle - .2 + (Math.random()*.4 ), init_dx, init_dy);
         bullets.push(bullet);
         this.bullets_in_magazine -= 1
-        this.shootCooldownTimer = 60
+        if(game.player.faster_shooting){
+          this.shootCooldownTimer = 48
+        }else{
+          this.shootCooldownTimer = 60
+        }
         this.shootSound();
         return bullets;
     }
 }
 
   class HightechRifle extends Gun{
-    ammunition = 130
+    ammunition = 16
     name = "High-Tech Rifle"
-    capacity = 65;
-    bullets_in_magazine = 65;
+    capacity = 8;
+    bullets_in_magazine = 8;
     reload_time = 2300;
 
     reloadSound(){
       if(game.sounds == true){
         game.soundManager.playSound("hightech-rifle-reloading")
+      }
+    }
+    shootSound(){
+      if(game.sounds == true){
+        game.soundManager.playSound("hightech-rifle-firing")
       }
     }
 
@@ -182,7 +201,12 @@ class Shotgun extends Gun{
         var bullet = new Projectile(x, y, angle, init_dx, init_dy);
         bullets.push(bullet);
         this.bullets_in_magazine -= 1
-        this.shootCooldownTimer = 0
+        if(game.player.faster_shooting){
+          this.shootCooldownTimer = 1200
+        }else{
+          this.shootCooldownTimer = 1500
+        }
+        this.shootSound()
         return bullets;
 
     }
