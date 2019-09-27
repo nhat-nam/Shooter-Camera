@@ -79,7 +79,7 @@ class LazerProjectile extends Projectile{
 
   render(ctx){
     ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,)";
+    ctx.fillStyle = "rgba(0,0,0,.7)";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.restore();
   }

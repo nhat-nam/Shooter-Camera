@@ -98,7 +98,7 @@ function Game(context, width, height) {
           this.crates.push(buff_box)
         }
 
-      // update all loot loot crates
+      // update all texts
       for(var i = 0; i < this.texts.length; i++){
         this.texts[i].update(delta)
         if(this.texts[i].delete){
@@ -106,7 +106,7 @@ function Game(context, width, height) {
         }
       }
 
-      // update all loot loot crates
+      // update all loot crates
       for(var i = 0; i < this.crates.length; i++){
         this.crates[i].update(delta)
         if(this.crates[i].delete){
