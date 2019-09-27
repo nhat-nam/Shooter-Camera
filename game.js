@@ -81,11 +81,11 @@ function Game(context, width, height) {
        // do we create new enemies?
         // create
 
-        /*if(this.ticks % 70 == 0){
+        if(this.ticks % 70 == 0){
           var entity = new FollowingEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
           entity.moveTowards(this.player.x, this.player.y);
           this.enemies.push( entity );
-        }*/
+        }
 
 
         if(this.ticks % 1500  == 0){
