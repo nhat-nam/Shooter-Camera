@@ -19,6 +19,7 @@ function Player(){
 	this.buff_timer = 0
 	this.buff_in_progress = false
 	this.faster_moving = false
+	this.invincibility = false
 
 
 	this.bullets = [];
@@ -124,7 +125,7 @@ function Player(){
 
   this.update = function(delta){
 
-		if(this.faster_moving || this.faster_shooting){
+		if(this.faster_moving || this.faster_shooting || this.invincibility){
 			console.log("buff")
 		}
 
@@ -173,6 +174,13 @@ function Player(){
 			this.faster_moving = false
 		}
 
+		if(this.buff_timer == 0 && this.invincibility && this.buff_in_progress == false){
+			this.buff_timer = 500
+			this.buff_in_progress = true
+		}else if(this.buff_timer == 0 && this.invincibility && this.buff_in_progress){
+			this.buff_in_progress = false
+			this.invincibility = false
+		}
 
 
 			if(this.target_dy < 0){

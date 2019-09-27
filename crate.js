@@ -6,6 +6,7 @@ class BulletCrate{
     this.width = 30
     this.delete = false
     this.color = "rgba(139,69,19)"
+    this.name = "bullet_crate"
 }
 
 
@@ -52,6 +53,7 @@ class BuffCrate extends BulletCrate{
     this.indicator_y = 400;
     this.buff_indicator = 0
     this.delete = false
+    this.name = "buff_crate"
   }
 
   indicateOpen(ctx){
@@ -73,11 +75,14 @@ class BuffCrate extends BulletCrate{
       && game.player.y - game.player.radius < this.y + this.range_height
       && game.player.y + game.player.radius > this.y){
         if(game.inputManager.isKeyDown("f")){
-          this.buff_indicator = Math.floor(Math.random() * 2) + 1
+          game.buff_crate_existing = false
+          this.buff_indicator = Math.floor(Math.random() * 3) + 1
           if(this.buff_indicator == 1){
             game.player.faster_moving = true
-          }else{
+          }else if(this.buff_indicator == 2){
             game.player.faster_shooting = true
+          }else{
+            game.player.invincibility = true
           }
           this.delete = true
         }

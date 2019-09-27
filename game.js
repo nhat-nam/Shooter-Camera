@@ -58,6 +58,7 @@ function Game(context, width, height) {
    this.sounds = true
    this.points = 0
    this.indicating = false
+   this.buff_crate_existing = false
 
    // Enemy array
    this.enemies = [];
@@ -81,6 +82,12 @@ function Game(context, width, height) {
        // do we create new enemies?
         // create
 
+        for(var i = 0; i < this.crates.length; i++){
+          if(this.crates[i].name == "buff_crate"){
+            this.buff_crate_existing = true
+          }
+        }
+
         if(this.ticks % 70 == 0){
           var entity = new FollowingEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
           entity.moveTowards(this.player.x, this.player.y);
@@ -93,7 +100,7 @@ function Game(context, width, height) {
           this.crates.push(bullet_box)
         }
 
-        if(this.ticks % 3000  == 0){
+        if(this.ticks % 2000  == 0 && !this.buff_crate_existing){
           var buff_box = new BuffCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
           this.crates.push(buff_box)
         }
@@ -145,7 +152,9 @@ function Game(context, width, height) {
         // check player intersection
         if(enemy.intersects(this.player) && enemy.ready_to_attack){
           console.log("enemy hitting player");
-          this.player.health = this.player.health - 1;
+          if(!this.player.invincibility){
+            this.player.health = this.player.health - 1;
+          }
           enemy.ready_to_attack = false;
         }
 
@@ -224,10 +233,13 @@ function Game(context, width, height) {
            this.drawPoints();
 
            if(game.player.faster_shooting){
-             var text = new StableText(200, 100, "Faster Shooting", 500, "black")
+             var text = new StableText(200, 100, "Faster Shooting", 1, "black")
              this.texts.push(text)
            }else if(game.player.faster_moving){
-             var text = new StableText(200, 100, "Faster Moving", 1000, "black")
+             var text = new StableText(200, 100, "Faster Moving", 1, "black")
+             this.texts.push(text)
+           }else if(game.player.invincibility){
+             var text = new StableText(200, 100, "Invincibility", 1, "black")
              this.texts.push(text)
            }
          }
