@@ -49,6 +49,8 @@ function Game(context, width, height) {
    this.soundManager.addSound("hightech-rifle-reloading", document.getElementById("lazar-reload"));
    this.soundManager.addSound("hightech-rifle-firing", document.getElementById("lazar-boom"));
    this.soundManager.addSound("death-by-lazer", document.getElementById("lazar-dead"));
+   this.soundManager.addSound("bullet-crate-opening", document.getElementById("bullet-crate-smashing"));
+   this.soundManager.addSound("bullet-crate-ammunition-sound", document.getElementById("bullet-crate-ammo"));
 
 
    this.border_width = 5;
@@ -58,7 +60,10 @@ function Game(context, width, height) {
    this.sounds = true
    this.points = 0
    this.indicating = false
-   this.buff_crate_existing = false
+   this.three_bullet_crates_existing = false
+   this.bullet_crate_counter = 0
+   this.buff_indicating = false
+   this.current_buff_duration = 0
 
    // Enemy array
    this.enemies = [];
@@ -79,14 +84,8 @@ function Game(context, width, height) {
        this.player.update(delta);
        this.camera.follow(this.player.x, this.player.y);
 
-       // do we create new enemies?
-        // create
 
-        for(var i = 0; i < this.crates.length; i++){
-          if(this.crates[i].name == "buff_crate"){
-            this.buff_crate_existing = true
-          }
-        }
+        // create
 
         if(this.ticks % 70 == 0){
           var entity = new FollowingEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
@@ -95,12 +94,12 @@ function Game(context, width, height) {
         }
 
 
-        if(this.ticks % 1500  == 0){
+        if(this.ticks % 1500  == 0 && this.bullet_crate_counter < 3){
           var bullet_box = new BulletCrate(Math.random() * WIDTH , Math.random() * HEIGHT)
           this.crates.push(bullet_box)
         }
 
-        if(this.ticks % 2000  == 0 && !this.buff_crate_existing){
+        if(this.ticks % 2000 == 0 && !this.buff_indicating){
           var buff_box = new BuffCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
           this.crates.push(buff_box)
         }
@@ -116,6 +115,9 @@ function Game(context, width, height) {
       // update all loot crates
       for(var i = 0; i < this.crates.length; i++){
         this.crates[i].update(delta)
+        if(this.crates[i].name == "bullet_crate"){
+          this.bullet_crate_counter++
+        }
         if(this.crates[i].delete){
           this.crates.splice(i, 1)
         }
@@ -140,7 +142,7 @@ function Game(context, width, height) {
               j = this.player.bullets.length;
               this.soundManager.playSound("death-by-lazer")
             }
-              this.points = this.points + 100
+              this.points += 100
           }
         }
 
@@ -232,15 +234,23 @@ function Game(context, width, height) {
 
            this.drawPoints();
 
-           if(game.player.faster_shooting){
-             var text = new StableText(200, 100, "Faster Shooting", 1, "black")
-             this.texts.push(text)
-           }else if(game.player.faster_moving){
-             var text = new StableText(200, 100, "Faster Moving", 1, "black")
-             this.texts.push(text)
-           }else if(game.player.invincibility){
-             var text = new StableText(200, 100, "Invincibility", 1, "black")
-             this.texts.push(text)
+           if(!this.buff_indicating){
+             if(game.player.faster_shooting){
+               var text = new StableText(200, 100, "Faster Shooting", 500, "black", game.buff_indicating = false)
+               this.texts.push(text)
+               this.buff_indicating = true
+               this.current_buff_duration = 500
+             }else if(game.player.faster_moving){
+               var text = new StableText(200, 100, "Faster Moving", 800, "black", game.buff_indicating = false)
+               this.texts.push(text)
+               this.buff_indicating = true
+               this.current_buff_duration = 800
+             }else if(game.player.invincibility){
+               var text = new StableText(200, 100, "Invincibility", 500, "black", game.buff_indicating = false)
+               this.texts.push(text)
+               this.buff_indicating = true
+               this.current_buff_duration = 500
+             }
            }
          }
 

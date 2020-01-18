@@ -20,6 +20,8 @@ function Player(){
 	this.buff_in_progress = false
 	this.faster_moving = false
 	this.invincibility = false
+	this.gun_indicator_name = ""
+	this.gun_indicator_x = 0
 
 
 	this.bullets = [];
@@ -113,10 +115,18 @@ function Player(){
   }
 	this.shoot = function(){
 		if(this.canShoot && this.player_gun.canShoot()){
-      var bullets = this.guns[this.current_gun_index].shoot(this.gunX, this.gunY, this.facing_angle, this.dx, this.dy);
-      for(var i=0;i<bullets.length;i++){
-        this.bullets.push(bullets[i]);
-      }
+			if(this.current_gun_index != 4){
+				var bullets = this.guns[this.current_gun_index].shoot(this.gunX, this.gunY, this.facing_angle, this.dx, this.dy);
+	      for(var i=0;i<bullets.length;i++){
+	        this.bullets.push(bullets[i]);
+	      }
+			}else{
+				var bullets = this.guns[this.current_gun_index].shoot(this.gunX, this.gunY, this.facing_angle)
+				for(var i=0;i<bullets.length;i++){
+	        this.bullets.push(bullets[i]);
+	      }
+			}
+
 			this.canShoot = false;
 			this.shootCooldownTimer = 0
 		}
@@ -143,6 +153,24 @@ function Player(){
 		//check and change gun
 		if(this.just_changed_gun){
 			this.player_gun = this.guns[this.current_gun_index];
+			if(this.current_gun_index == 0){
+				this.gun_indicator_name = "Handgun"
+				this.gun_indicator_x = 215
+			}else if(this.current_gun_index == 1){
+				this.gun_indicator_name = "Assault Rifle"
+				this.gun_indicator_x = 202
+			}else if(this.current_gun_index == 2){
+				this.gun_indicator_name = "Shotgun"
+				this.gun_indicator_x = 215
+			}else if(this.current_gun_index == 3){
+				this.gun_indicator_name = "Uzi"
+				this.gun_indicator_x = 236
+			}else{
+				this.gun_indicator_name = "High-Tech Rifle"
+				this.gun_indicator_x = 193
+			}
+			var text = new FadingText(this.gun_indicator_x, 430, 0, 0, 0, 1.0, this.gun_indicator_name, 80, 75, 0.05)
+			game.texts.push(text)
 			this.just_changed_gun = false;
 		}
 
@@ -336,6 +364,10 @@ function Player(){
 
 		}
 		ctx.restore();
+
+		//indicate lives
+		var text = new StableText(420, 20, "LIVES: ", 1, "black")
+		game.texts.push(text)
 
 	}
 }

@@ -16,40 +16,24 @@ class Projectile{
     this.y = this.y + (this.dy * (delta/1000));
     this.x = this.x + (this.dx * (delta/1000));
 
-    //delete if pass top border and bounce if it's HightechRifle's bullets
+    //delete if pass top border
     if(this.y - this.radius <= 0){
-      if(game.player.current_gun_index != 4){
-        this.delete = true;
-      } else{
-        this.dy = -1*this.dy
-      }
+      this.delete = true;
     }
 
-    //delete if pass bottom border and bounce if it's HightechRifle's bullets
+    //delete if pass bottom border
     if(this.y + this.radius >= HEIGHT){
-      if(game.player.current_gun_index != 4){
-        this.delete = true;
-      } else{
-        this.dy = -1*this.dy
-      }
+      this.delete = true;
     }
 
-    //delete if pass left border and bounce if it's HightechRifle's bullets
+    //delete if pass left border
     if(this.x - this.radius <= 0){
-      if(game.player.current_gun_index != 4){
-        this.delete = true;
-      } else{
-        this.dx = -1*this.dx
-      }
+      this.delete = true;
     }
 
-    //delete if pass right border and bounce if it's HightechRifle's bullets
+    //delete if pass right border
     if(this.x + this.radius >= WIDTH){
-      if(game.player.current_gun_index != 4){
-        this.delete = true;
-      } else{
-        this.dx = -1*this.dx
-      }
+      this.delete = true;
     }
 
   }
@@ -64,23 +48,38 @@ class Projectile{
   }
 }
 
-class LazerProjectile extends Projectile{
+class LazerProjectile{
   constructor(x, y, angle){
     this.x = x
     this.y = y
     this.angle = angle
-    this.height = 0
+    this.height = 710
     this.width = 0
+    this.expanding = true
+    this.delete = false
   }
 
   update(delta){
+    if(this.width < 20 && this.expanding){
+      this.width++
+    }else if(this.width >= 20){
+      this.expanding = false
+      this.width--
+    }else if(this.width < 20 && !this.expanding){
+      this.width--
+    }
 
+    if(this.width == 0 && !this.expanding){
+      this.delete = true
+    }
   }
 
   render(ctx){
     ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,.7)";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fillStyle = "rgba(0,0,255,.7)";
+    ctx.translate(this.x + this.width/2, this.y + this.height/2)
+    ctx.rotate(this.angle)
+    ctx.fillRect( -1 * this.width/2, -1*this.height/2, this.width, this.height)
     ctx.restore();
   }
 }

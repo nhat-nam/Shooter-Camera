@@ -196,9 +196,9 @@ class Shotgun extends Gun{
       }
     }
 
-    shoot(x, y, angle, init_dx, init_dy){
+    shoot(x, y, angle){
       var bullets = [];
-        var bullet = new Projectile(x, y, angle, init_dx, init_dy);
+        var bullet = new LazerProjectile(x, y, angle);
         bullets.push(bullet);
         this.bullets_in_magazine -= 1
         if(game.player.faster_shooting){

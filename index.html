@@ -1,13 +1,14 @@
 <html>
 	<head>
 		<title>Shooter Camera</title>
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
 		<style>
 
 
 		</style>
 	</head>
 	<body>
-		<canvas id="canvas" height=500 width=500 style="border:1px solid red;">
+		<canvas id="canvas" height=500 width=500 style="border:1px solid yellow;">
 		</canvas>
 		<div id="hud">
 			<div id="gun-current"></div>
@@ -64,10 +65,18 @@
 			<source src="./disintegration.mp3" type="audio/mp3">
 		</audio>
 
+		<audio id="bullet-crate-smashing">
+			<source src="./opening-bullet-crate.wav" type="audio/wav">
+		</audio>
+
+		<audio id="bullet-crate-ammo">
+			<source src="./getting-ammo.mp3" type="audio/mp3">
+		</audio>
+
 		<script type="text/javascript" src="./player.js"></script>
 		<script type="text/javascript" src="./camera.js"></script>
 		<script type="text/javascript" src="./InputManager.js"></script>
-		<script type="text/javascript" src="./projectile.js"></script>
+		<script type="text/javascript" src="./Projectile.js"></script>
 		<script type="text/javascript" src="./enemy.js"></script>
 		<script type="text/javascript" src="./SoundManager.js"></script>
 		<script type="text/javascript" src="./gun.js"></script>

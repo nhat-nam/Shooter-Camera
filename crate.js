@@ -16,6 +16,10 @@ class BulletCrate{
       && game.player.x + game.player.radius > this.x
       && game.player.y - game.player.radius < this.y + this.height
       && game.player.y + game.player.radius > this.y){
+        game.soundManager.playSound("bullet-crate-opening")
+        setTimeout(function(){
+          game.soundManager.playSound("bullet-crate-ammunition-sound")
+        },580)
         this.delete = true
         if(game.player.current_gun_index == 0){
           game.player.guns[0].ammunition += 8

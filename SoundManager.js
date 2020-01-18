@@ -12,12 +12,5 @@ class SoundManager{
 				this.sounds[key].play();
 			}
 		}
-		stopSound(key){
-
-		}
-		pauseSound(key){
-
-		}
-
 
 }
