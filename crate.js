@@ -109,3 +109,7 @@ class BuffCrate extends BulletCrate{
     }
   }
 }
+
+class VisibleAmmo{
+
+}

@@ -87,9 +87,10 @@ function Game(context, width, height) {
 
         // create
 
-        if(this.ticks % 70 == 0){
-          var entity = new FollowingEnemy(Math.random() * WIDTH, Math.random() * HEIGHT)
-          entity.moveTowards(this.player.x, this.player.y);
+        if(this.ticks % 80 == 0){
+          var 
+          var entity = new FollowingEnemy(
+          this.randomNumberPick(), Math.random() * HEIGHT)
           this.enemies.push( entity );
         }
 
@@ -130,35 +131,47 @@ function Game(context, width, height) {
 
         //check if a bullet hits this enemy
         for(var j = 0; j < this.player.bullets.length; j++){
-          if(!this.player.bullets[j].delete && enemy.intersects( this.player.bullets[j] )){
-            if(this.player.current_gun_index != 4){
-              this.enemies.splice(i, 1);
-      				i--;
-              this.player.bullets[j].delete = true;
-              j = this.player.bullets.length;
-            } else{
-              this.enemies.splice(i, 1);
-              i--;
-              j = this.player.bullets.length;
-              this.soundManager.playSound("death-by-lazer")
+          if(!this.player.bullets[j].delete){
+            if(enemy.intersects( this.player.bullets[j] )){
+              if(this.player.current_gun_index != 4){
+                this.enemies.splice(i, 1);
+        				i--;
+                this.player.bullets[j].delete = true;
+                j = this.player.bullets.length;
+              } else{
+                this.enemies.splice(i, 1);
+                i--;
+                j = this.player.bullets.length;
+                this.soundManager.playSound("death-by-lazer")
+              }
+                this.points += 100
             }
-              this.points += 100
           }
         }
 
-        if(this.player.just_changed_gun){
-          if(this.player.current_gun_index == 0){
+        // check player and enemy interaction
+        if(enemy.name == "following_enemy"){
+          if(enemy.intersects(this.player) && enemy.ready_to_attack){
+            console.log("enemy hitting player");
+            if(!this.player.invincibility){
+              this.player.health = this.player.health - 1;
+            }
+            enemy.ready_to_attack = false;
+          }
+        }else{
+          for(var b = 0; b < enemy.bullets.length; b++){
+            if(!enemy.bullets[b].delete){
+              if(this.player.intersects(enemy.bullets[b])){
+                if(!this.player.invincibility){
+                  this.player.health--
+                }
+                enemy.bullets[b].delete = true
+                enemy.ready_to_attack = false
+              }
+            }
           }
         }
 
-        // check player intersection
-        if(enemy.intersects(this.player) && enemy.ready_to_attack){
-          console.log("enemy hitting player");
-          if(!this.player.invincibility){
-            this.player.health = this.player.health - 1;
-          }
-          enemy.ready_to_attack = false;
-        }
 
         //if player loses all health, the game will end
         if(this.player.health <= 0){
@@ -332,6 +345,17 @@ function Game(context, width, height) {
      this.ctx.fillStyle = "black"
      var c_pos = this.camera.toWorldCoordinates(20,20);
      this.ctx.fillText(this.points, c_pos.x, c_pos.y);
+   }
+
+   //convenience functions
+   this.randBetween = function(x,y){
+     var diff = Math.abs(x-y);
+     return Math.random()*diff + Math.min(x,y);
+   }
+
+   this.randomNumberPick = function(array_of_numbers){
+     var amount_of_numbers = array_of_number.length
+     return array_of_numbers[Math.floor(Math.random(amount_of_numbers-1))]
    }
 }
 

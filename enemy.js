@@ -1,11 +1,16 @@
 class Enemy{
   constructor(x, y){
+
     //position
     this.x = x;
 		this.y = y;
     //default size
-    this.width = 10;
-    this.height = 10;
+    this.width = 25;
+    this.height = 25;
+
+    //player's x and y
+    this.player_x = 0
+    this.player_y = 0
 
     //velocity
     this.max_velocity = 200;
@@ -18,11 +23,10 @@ class Enemy{
 		this.fillStyle = "red";
 
     this.ticks = 0;
-    this.player_x = 0;
-    this.player_y = 0;
     this.ready_to_attack = true
     this.waiting_to_attack = false;
     this.delete = false;
+    this.name = ""
 	}
   intersects(obj){
     // check if obj intersects with this Enemy
@@ -47,7 +51,6 @@ class Enemy{
   }
   moveTowards(x, y){
     // calculate an x and y velocity for this enemy
-
     if(x - this.x  == 0){
 		    x += .1;
 		}
@@ -64,10 +67,14 @@ class Enemy{
   entityUpdate(delta){
     //defined in sublcasses
   }
+  entityNaming(){
+    //defined in sublcasses
+  }
   update(delta){
 
     // subclass methods
     this.entityUpdate(delta);
+    this.entityNaming();
     // update position
     this.x = this.x + (this.dx * (delta/1000));
     this.y = this.y + (this.dy * (delta/1000));
@@ -102,19 +109,37 @@ class FollowingEnemy extends Enemy{
         this.moveTowards(this.player_x, this.player_y);
     }
   }
-  render(ctx){
-    ctx.save();
-    ctx.fillStyle = this.fillStyle;
-    ctx.fillRect(this.x, this.y, 20, 20);
-    ctx.restore();
+  entityNaming(){
+    this.name = "following_enemy"
   }
 
 }
 
 class ShooterEnemy extends Enemy{
+  constructor(x, y){
+    super(x, y)
+    this.player_x = 0
+    this.player_y = 0
+    this.width = 10;
+    this.height = 10;
+    this.bullets = []
+
+    //velocity
+    this.max_velocity = 120;
+		this.dx = 0;
+		this.dy = 0;
+    this.ticks = 0;
+    this.ready_to_attack = true
+    this.waiting_to_attack = false;
+    this.delete = false;
+    this.name = ""
+  }
   entityUpdate(delta){
     //stay in range
 
+  }
+  entityNaming(){
+    this.name = "shooter_enemy"
   }
 
   render(ctx){

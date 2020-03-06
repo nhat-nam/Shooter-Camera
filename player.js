@@ -338,6 +338,27 @@ function Player(){
 		this.player_gun.update(delta);
 
 	}
+	this.intersects = function(obj){
+    // check if obj intersects with this Enemy
+    if(obj.radius){
+      //obj is circle
+      if(obj.x - obj.radius < this.x + this.width
+        && obj.x + obj.radius > this.x
+        && obj.y - obj.radius < this.y + this.height
+        && obj.y + obj.radius > this.y){
+        return true;
+      }
+    }else{
+      //obj width & height
+      if(obj.x < this.x + this.width
+        && obj.x + obj.width > this.x
+        && obj.y - obj.radius < this.y + this.height
+        && obj.y + obj.radius > this.y){
+        return true;
+      }
+    }
+    return false;
+  }
 
 	this.render = function(ctx){
 		ctx.save();
@@ -366,7 +387,7 @@ function Player(){
 		ctx.restore();
 
 		//indicate lives
-		var text = new StableText(420, 20, "LIVES: ", 1, "black")
+		var text = new StableText(420, 20, "LIVES: "+this.health, 1, "black")
 		game.texts.push(text)
 
 	}
