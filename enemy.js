@@ -88,7 +88,7 @@ class Enemy{
     if(this.ready_to_attack == false && this.waiting_to_attack == false){
       this.waiting_to_attack = true;
       var enemy = this;
-      setTimeout(5000, function(){
+      setTimeout(500, function(){
         enemy.ready_to_attack = true;
         enemy.waiting_to_attack = false;
       });

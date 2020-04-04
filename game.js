@@ -88,8 +88,9 @@ function Game(context, width, height) {
         // create
 
         if(this.ticks % 80 == 0){
-          var entity = new FollowingEnemy(
-          Math.random() * WIDTH+1, Math.random() * HEIGHT+1)
+          var x = this.randomNumberPick([this.randBetween(-100,this.player.x-250),this.randBetween(WIDTH+100,this.player.x+250)]);
+          var y = this.randomNumberPick([this.randBetween(-100,this.player.y-250),this.randBetween(HEIGHT+100,this.player.y+250)]);
+          var entity = new FollowingEnemy(x, y)
           this.enemies.push( entity );
         }
 
