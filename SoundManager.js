@@ -13,4 +13,16 @@ class SoundManager{
 			}
 		}
 
+		pauseSound(key){
+			if(this.sound[key]){
+				this.sound[key].pause();
+			}
+		}
+
+		stopSound(key){
+			if(this.sound[key]){
+				this.sound[key].pause();
+				this.sound[key].currentTime = 0;
+			}
+		}
 }
