@@ -14,15 +14,23 @@ class SoundManager{
 		}
 
 		pauseSound(key){
-			if(this.sound[key]){
-				this.sound[key].pause();
+			if(this.sounds[key]){
+				this.sounds[key].pause();
 			}
 		}
 
 		stopSound(key){
-			if(this.sound[key]){
-				this.sound[key].pause();
-				this.sound[key].currentTime = 0;
+			if(this.sounds[key]){
+				this.sounds[key].pause();
+				this.sounds[key].currentTime = 0;
+			}
+		}
+
+		checkPlaying(key){
+			if(!this.sounds[key].paused){
+				return true;
+			}else{
+				return false;
 			}
 		}
 }

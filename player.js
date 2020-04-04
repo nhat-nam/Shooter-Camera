@@ -150,7 +150,7 @@ function Player(){
 			this.canShoot = true;
 		}
 
-		//check and change gun
+		//check and display current gun
 		if(this.just_changed_gun){
 			this.player_gun = this.guns[this.current_gun_index];
 			if(this.current_gun_index == 0){

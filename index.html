@@ -6,6 +6,47 @@
 
 
 		</style>
+		<SCRIPT LANGUAGE="JavaScript">
+<!-- var qDuration=600;
+var qCounter=0;
+function quake()
+{
+  // the horizontal displacement
+  var deltaX=1;
+  // make sure the browser support the moveBy method
+  if (window.moveBy)
+  {
+    for (qCounter=0; qCounter<qDuration; qCounter++)
+    {
+      // shake left
+      if ((qCounter%4)==0)
+      {
+        window.moveBy(deltaX, 0);
+      }
+      // shake right
+      else if ((qCounter%4)==2)
+      {
+        window.moveBy(-deltaX, 0);
+      }
+      // speed up or slow down every X cycles
+      if ((qCounter%30)==0)
+      {
+        // speed up halfway
+        if (qCounter<qDuration/2)
+        {
+          deltaX++;
+        }
+        // slow down after halfway of the duration
+        else
+        {
+          deltaX--;
+        }
+      }
+    }
+	}
+}
+//-->
+</script>
 	</head>
 	<body>
 		<canvas id="canvas" height=500 width=500 style="border:1px solid yellow;">
@@ -18,61 +59,64 @@
 		</div>
 
 		<audio id="gun-boom">
-			<source src="./2672.mp3" type="audio/mp3">
+			<source src="./audio/2672.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="gun-reload">
-			<source src="./pistolreloading.mp3" type="audio/mp3">
+			<source src="./audio/pistolreloading.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="shotgun-boom">
-			<source src="./shotgun-firing.mp3" type="audio/mp3">
+			<source src="./audio/shotgun-firing.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="shotgun-reload">
-			<source src="./shotgunreload.wav" type="audio/wav">
+			<source src="./audio/shotgunreload.wav" type="audio/wav">
 		</audio>
 
 		<audio id="assaultrifle-reload">
-			<source src="./assaultriflereload.wav" type="audio/wav">
+			<source src="./audio/assaultriflereload.wav" type="audio/wav">
 		</audio>
 
 		<audio id="uzi-boom">
-			<source src="./uzi-firing.mp3" type="audio/mp3">
+			<source src="./audio/uzi-firing.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="uzi-reload1">
-			<source src="./uzi-changeclip.mp3" type="audio/mp3">
+			<source src="./audio/uzi-changeclip.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="uzi-reload2">
-			<source src="./uzi-reload.mp3" type="audio/mp3">
+			<source src="./audio/uzi-reload.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="empty-click">
-			<source src="./empty-gun-shot.wav" type="audio/wav">
+			<source src="./audio/empty-gun-shot.wav" type="audio/wav">
 		</audio>
 
 		<audio id="lazar-reload">
-			<source src="./lazer-reload.mp3" type="audio/mp3">
+			<source src="./audio/lazer-reload.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="lazar-boom">
-			<source src="./lazer-shot.mp3" type="audio/mp3">
+			<source src="./audio/lazer-shot.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="lazar-dead">
-			<source src="./disintegration.mp3" type="audio/mp3">
+			<source src="./audio/disintegration.mp3" type="audio/mp3">
 		</audio>
 
 		<audio id="bullet-crate-smashing">
-			<source src="./opening-bullet-crate.wav" type="audio/wav">
+			<source src="./audio/opening-bullet-crate.wav" type="audio/wav">
 		</audio>
 
 		<audio id="bullet-crate-ammo">
-			<source src="./getting-ammo.mp3" type="audio/mp3">
+			<source src="./audio/getting-ammo.mp3" type="audio/mp3">
 		</audio>
 
+		<audio id="weapon-switch">
+			<source src="./audio/weapon-switch.wav" type="audio/wav">
+		</audio>
 		<script type="text/javascript" src="./player.js"></script>
 		<script type="text/javascript" src="./camera.js"></script>
 		<script type="text/javascript" src="./InputManager.js"></script>

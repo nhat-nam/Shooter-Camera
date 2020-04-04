@@ -51,6 +51,7 @@ function Game(context, width, height) {
    this.soundManager.addSound("death-by-lazer", document.getElementById("lazar-dead"));
    this.soundManager.addSound("bullet-crate-opening", document.getElementById("bullet-crate-smashing"));
    this.soundManager.addSound("bullet-crate-ammunition-sound", document.getElementById("bullet-crate-ammo"));
+   this.soundManager.addSound("weapon-switch", document.getElementById("weapon-switch"));
 
 
    this.border_width = 5;
@@ -153,8 +154,8 @@ function Game(context, width, height) {
         if(enemy.name == "following_enemy"){
           if(enemy.intersects(this.player) && enemy.ready_to_attack){
             console.log("enemy hitting player");
-            if(!this.player.invincibility){
-              this.player.health = this.player.health - 1;
+            if(!this.player.invincibility && this.player.health>0){
+              this.player.health--;
             }
             enemy.ready_to_attack = false;
           }
@@ -163,6 +164,7 @@ function Game(context, width, height) {
             if(!enemy.bullets[b].delete){
               if(this.player.intersects(enemy.bullets[b])){
                 if(!this.player.invincibility){
+                  quake();
                   this.player.health--
                 }
                 enemy.bullets[b].delete = true
@@ -297,6 +299,7 @@ function Game(context, width, height) {
      this.ctx.restore();
    }
 
+
    this.drawWorldBorders = function(){
      this.ctx.save();
      this.ctx.strokeStyle = this.border_color;
@@ -336,7 +339,7 @@ function Game(context, width, height) {
    this.reloading = function(){
      this.ctx.font = "900 16px Arial";
      this.ctx.fillStyle = "black"
-     var c_pos = this.camera.toWorldCoordinates(195,400);
+     var c_pos = this.camera.toWorldCoordinates(211,400);
      this.ctx.fillText("Reloading", c_pos.x, c_pos.y);
    }
 
@@ -367,11 +370,18 @@ window.onkeydown = function(e){
        }else{
          game.sounds = true
        }
-     }else if(e.key == " "){
+     }
+     if(e.key == " "){
        if(game.player.guns[game.player.current_gun_index].bullets_in_magazine == 0 && game.player.guns[game.player.current_gun_index].just_indicated_empty == false && game.sounds){
          game.soundManager.playSound("empty-magazine-click")
          game.player.guns[game.player.current_gun_index].just_indicated_empty = true
        }
+     }
+     if(e.key=="1"||e.key=="2"||e.key=="3"||e.key=="4"||e.key=="5"){
+       if(!game.soundManager.sounds["weapon-switch"].paused){
+ 				game.soundManager.stopSound("weapon-switch")
+   		 }
+   		  game.soundManager.playSound("weapon-switch")
      }
    }
  }
