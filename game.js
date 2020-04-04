@@ -88,9 +88,8 @@ function Game(context, width, height) {
         // create
 
         if(this.ticks % 80 == 0){
-          var 
           var entity = new FollowingEnemy(
-          this.randomNumberPick(), Math.random() * HEIGHT)
+          Math.random() * WIDTH+1, Math.random() * HEIGHT+1)
           this.enemies.push( entity );
         }
 
@@ -354,7 +353,7 @@ function Game(context, width, height) {
    }
 
    this.randomNumberPick = function(array_of_numbers){
-     var amount_of_numbers = array_of_number.length
+     var amount_of_numbers = array_of_numbers.length
      return array_of_numbers[Math.floor(Math.random(amount_of_numbers-1))]
    }
 }
