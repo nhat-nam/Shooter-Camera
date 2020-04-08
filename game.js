@@ -33,6 +33,8 @@ function Game(context, width, height) {
    this._prevTime = 0;
    this.player = new Player();
    this.camera = new Camera(1,1,500,500);
+   this.flash = new Flash()
+   this.end_block = null;
    this.inputManager = new InputManager(canvas);
    this.inputManager.listenForEvents();
    this.game_state = "playing"
@@ -52,6 +54,7 @@ function Game(context, width, height) {
    this.soundManager.addSound("bullet-crate-opening", document.getElementById("bullet-crate-smashing"));
    this.soundManager.addSound("bullet-crate-ammunition-sound", document.getElementById("bullet-crate-ammo"));
    this.soundManager.addSound("weapon-switch", document.getElementById("weapon-switch"));
+   this.soundManager.addSound("health-loss", document.getElementById("health-loss"));
 
 
    this.border_width = 5;
@@ -65,6 +68,7 @@ function Game(context, width, height) {
    this.bullet_crate_counter = 0
    this.buff_indicating = false
    this.current_buff_duration = 0
+   this.shake = false;
 
    // Enemy array
    this.enemies = [];
@@ -81,9 +85,10 @@ function Game(context, width, height) {
    *  Update
    **/
    this.update = function(delta) {
+     this.camera.follow(this.player.x, this.player.y);
      if(this.game_state == "playing"){
        this.player.update(delta);
-       this.camera.follow(this.player.x, this.player.y);
+
 
 
         // create
@@ -105,6 +110,10 @@ function Game(context, width, height) {
           var buff_box = new BuffCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
           this.crates.push(buff_box)
         }
+      //update Flash
+      if(this.flash.active){
+        this.flash.update(delta)
+      }
 
       // update all texts
       for(var i = 0; i < this.texts.length; i++){
@@ -113,7 +122,6 @@ function Game(context, width, height) {
           this.texts.splice(i, 1)
         }
       }
-
       // update all loot crates
       for(var i = 0; i < this.crates.length; i++){
         this.crates[i].update(delta)
@@ -156,6 +164,18 @@ function Game(context, width, height) {
             console.log("enemy hitting player");
             if(!this.player.invincibility && this.player.health>0){
               this.player.health--;
+              if(this.player.health<1){
+                pos = this.camera.toWorldCoordinates(0,0)
+                this.end_block = new EndBlock(this.points,pos.x,pos.y)
+                this.game_state = "game_over"
+              }else{
+                this.quake(0.1);
+                this.flash.flash(1,.025);
+              }
+              if(!this.soundManager.sounds["health-loss"].paused){
+                this.soundManager.stopSound("health-loss");
+              }
+              this.soundManager.playSound("health-loss")
             }
             enemy.ready_to_attack = false;
           }
@@ -164,7 +184,6 @@ function Game(context, width, height) {
             if(!enemy.bullets[b].delete){
               if(this.player.intersects(enemy.bullets[b])){
                 if(!this.player.invincibility){
-                  quake();
                   this.player.health--
                 }
                 enemy.bullets[b].delete = true
@@ -172,12 +191,6 @@ function Game(context, width, height) {
               }
             }
           }
-        }
-
-
-        //if player loses all health, the game will end
-        if(this.player.health <= 0){
-          this.game_state = "game_over"
         }
 
         // for loop all bullets in this.player
@@ -189,6 +202,8 @@ function Game(context, width, height) {
         }
       }
       this.ticks++;
+    }else if(this.game_state=="game_over"){
+      this.end_block.update(delta)
     }
 }
    /**
@@ -196,85 +211,107 @@ function Game(context, width, height) {
    *
    *
    **/
-   this.render = function() {
+   this.render = function(){
 
-     this.ctx.clearRect(0, 0, this.width, this.height);
 
-     this.ctx.save();
-     this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
-     this.drawWorldBorders();
-     this.drawWorldGrid();
-     this.player.render(this.ctx);
 
-         // render the bad guys
-         for(var i = 0; i < this.enemies.length; i++){
-           this.enemies[i].render(this.ctx);
-         }
+       this.ctx.clearRect(0, 0, this.width, this.height);
+       this.ctx.save();
+       this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
+       if(this.shake){
+         var dx = Math.random()*16-8;
+         var dy = Math.random()*16-8;
+         this.ctx.translate(dx, dy);
+       }
+       this.drawWorldBorders();
+       this.drawWorldGrid();
 
-         //render the crates
-         for(var i = 0; i < this.crates.length; i++){
-           this.crates[i].render(this.ctx);
-         }
+       if(this.game_state=="playing"){
+           //render the texts
+           for(var i = 0; i < this.texts.length; i++){
+             this.texts[i].render(this.ctx);
+           }
+           this.player.render(this.ctx);
+           //render flash
+           if(this.flash.active){
+             this.flash.render(ctx)
+           }
+           // render the enemies
+           for(var i = 0; i < this.enemies.length; i++){
+             this.enemies[i].render(this.ctx);
+           }
 
-         //render the texts
-         for(var i = 0; i < this.texts.length; i++){
-           this.texts[i].render(this.ctx);
-         }
-         if(this.game_state == "game_over"){
-           this.endPoints()
-           this.youDead();
-         }else{
-           if(this.player.guns[this.player.current_gun_index].bullets_in_magazine == 0){
-             if(this.player.guns[this.player.current_gun_index].ammunition > 0){
-               this.needReloading();
-               if(this.indicating == false){
-                 this.indicating = true
+           //render the crates
+           for(var i = 0; i < this.crates.length; i++){
+             this.crates[i].render(this.ctx);
+           }
+
+             if(this.player.guns[this.player.current_gun_index].bullets_in_magazine == 0){
+               if(this.player.guns[this.player.current_gun_index].ammunition > 0){
+                 this.needReloading();
+                 if(this.indicating == false){
+                   this.indicating = true
+                 }
+               }else{
+                 this.outOfBullets();
+                 if(this.indicating == false){
+                   this.indicating = true
+                 }
                }
              }else{
-               this.outOfBullets();
+               this.indicating = false
+             }
+
+             if(this.player.guns[this.player.current_gun_index].reloadTimer > 0){
+               this.reloading();
                if(this.indicating == false){
                  this.indicating = true
                }
              }
-           }else{
-             this.indicating = false
-           }
 
-           if(this.player.guns[this.player.current_gun_index].reloadTimer > 0){
-             this.reloading();
-             if(this.indicating == false){
-               this.indicating = true
+             this.drawPoints();
+             this.drawLives();
+
+             if(!this.buff_indicating){
+               if(game.player.faster_shooting){
+                 var text = new StableText(200, 100, "Faster Shooting", 500, "black")
+                 this.texts.push(text)
+                 this.buff_indicating = true
+                 this.current_buff_duration = 500
+               }else if(game.player.faster_moving){
+                 var text = new StableText(200, 100, "Faster Moving", 800, "black")
+                 this.texts.push(text)
+                 this.buff_indicating = true
+                 this.current_buff_duration = 800
+               }else if(game.player.invincibility){
+                 var text = new StableText(200, 100, "Invincibility", 500, "black")
+                 this.texts.push(text)
+                 this.buff_indicating = true
+                 this.current_buff_duration = 500
+               }
              }
            }
 
-           this.drawPoints();
 
-           if(!this.buff_indicating){
-             if(game.player.faster_shooting){
-               var text = new StableText(200, 100, "Faster Shooting", 500, "black", game.buff_indicating = false)
-               this.texts.push(text)
-               this.buff_indicating = true
-               this.current_buff_duration = 500
-             }else if(game.player.faster_moving){
-               var text = new StableText(200, 100, "Faster Moving", 800, "black", game.buff_indicating = false)
-               this.texts.push(text)
-               this.buff_indicating = true
-               this.current_buff_duration = 800
-             }else if(game.player.invincibility){
-               var text = new StableText(200, 100, "Invincibility", 500, "black", game.buff_indicating = false)
-               this.texts.push(text)
-               this.buff_indicating = true
-               this.current_buff_duration = 500
-             }
-           }
-         }
+           if(this.game_state == "game_over"&&!this.shake){
+             this.end_block.render(ctx);
+            }
+
+           this.ctx.restore();
 
 
 
-         this.ctx.restore();
+
        }
+    this.quake = function(sec){
+      this.shake = true;
+      var game = this
+      setTimeout(function(){
+        game.shake=false},
+      sec*1000);
+    }
 
-   this.drawWorldGrid = function(){
+    this.drawWorldGrid = function(){
 
      this.ctx.save();
      this.ctx.strokeStyle="rgba(0,0,0,.2)";
@@ -308,20 +345,6 @@ function Game(context, width, height) {
      this.ctx.restore();
    }
 
-   this.youDead = function(){
-     this.ctx.font = "900 16px Arial";
-     this.ctx.fillStyle = "black"
-     var c_pos = this.camera.toWorldCoordinates(200,200);
-     this.ctx.fillText("YOU DIED", c_pos.x, c_pos.y);
-  }
-
-  this.endPoints = function(){
-    this.ctx.font = "900 16px Arial";
-    this.ctx.fillStyle = "black"
-    var c_pos = this.camera.toWorldCoordinates(218,230);
-    this.ctx.fillText(this.points, c_pos.x, c_pos.y);
- }
-
   this.needReloading = function(){
     this.ctx.font = "900 16px Arial";
     this.ctx.fillStyle = "black"
@@ -348,6 +371,11 @@ function Game(context, width, height) {
      this.ctx.fillStyle = "black"
      var c_pos = this.camera.toWorldCoordinates(20,20);
      this.ctx.fillText(this.points, c_pos.x, c_pos.y);
+   }
+   this.drawLives = function(){
+     //indicate lives
+ 		var lives = new StableText(420, 20, "LIVES: "+this.player.health, 1, "black")
+ 		game.texts.push(lives)
    }
 
    //convenience functions
@@ -378,9 +406,6 @@ window.onkeydown = function(e){
        }
      }
      if(e.key=="1"||e.key=="2"||e.key=="3"||e.key=="4"||e.key=="5"){
-       if(!game.soundManager.sounds["weapon-switch"].paused){
- 				game.soundManager.stopSound("weapon-switch")
-   		 }
    		  game.soundManager.playSound("weapon-switch")
      }
    }

@@ -386,9 +386,5 @@ function Player(){
 		}
 		ctx.restore();
 
-		//indicate lives
-		var text = new StableText(420, 20, "LIVES: "+this.health, 1, "black")
-		game.texts.push(text)
-
 	}
 }

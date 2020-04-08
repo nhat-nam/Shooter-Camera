@@ -40,6 +40,8 @@ function Camera(x, y, w, h, ww, wh){
 
   }
 
+
+
   this.update = function(delta){
     this.x = this.x + (this.dx + (delta/1000));
     this.y = this.y + (this.dy + (delta/1000));

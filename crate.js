@@ -5,7 +5,7 @@ class BulletCrate{
     this.height = 30
     this.width = 30
     this.delete = false
-    this.color = "rgba(139,69,19)"
+    this.color = "rgba(139,69,19,.8)"
     this.name = "bullet_crate"
 }
 
@@ -51,7 +51,7 @@ class BuffCrate extends BulletCrate{
     super(x, y);
     this.width = 35;
     this.height = 35;
-    this.color = "rgb(64,224,208)";
+    this.color = "rgba(64,224,208,.9)";
     this.range_width = this.width + 15;
     this.range_height = this.height + 15;
     this.indicator_y = 400;

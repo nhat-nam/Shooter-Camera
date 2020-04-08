@@ -1,19 +1,14 @@
 class StableText{
-  constructor(x, y, content, timer, color, end_function){
+  constructor(x, y, content, timer, color){
     this.x = x
     this.y = y
     this.content = content
     this.timer = timer
     this.delete = false
     this.color = color
-    this.dying_action = end_function
-  }
-  endFunction(){
-    this.dying_action
   }
   update(delta){
     if(this.timer <= 0){
-      this.endFunction();
       this.delete = true
     }
     this.timer--
@@ -27,8 +22,8 @@ class StableText{
 }
 
 class FadingText extends StableText{
-  constructor(x, y, red, green, blue, alpha, content, timer, fadingPoint, fadingRate, end_function){
-    super(x, y, content, timer, end_function)
+  constructor(x, y, red, green, blue, alpha, content, timer, fadingPoint, fadingRate){
+    super(x, y, content, timer)
     this.x = x
     this.y = y
     this.content = content
@@ -40,16 +35,11 @@ class FadingText extends StableText{
     this.green = green
     this.blue = blue
     this.alpha = alpha
-    this.dying_action = end_function
-  }
-  endFunction(){
-    this.dying_action
   }
 
   update(delta){
     if(this.timer <= 0){
       if(this.dying_action != "none"){
-        this.endFunction()
       }
       this.delete = true
     }
@@ -68,27 +58,22 @@ class FadingText extends StableText{
 }
 
 class BlinkingText extends StableText{
-  constructor(x, y, red, green, blue, alpha, content, timer, blinkingPoint, transparentLength, opaqueLength, end_function){
-    super(x, y, content, timer, end_function)
+  constructor(x, y, red, green, blue, alpha, content, timer, blinkingPoint, transparentLength, opaqueLength){
+    super(x, y, content, timer)
   }
 }
 
 class StableTextWorld extends StableText{
-  constructor(x, y, content, timer, color, end_function){
+  constructor(x, y, content, timer, color){
     this.x = x
     this.y = y
     this.content = content
     this.timer = timer
     this.delete = false
     this.color = color
-    this.dying_action = end_function
-  }
-  endFunction(){
-    this.dying_action
   }
   update(delta){
     if(this.timer <= 0){
-      this.endFunction();
       this.delete = true
     }
     this.timer--
@@ -101,8 +86,8 @@ class StableTextWorld extends StableText{
 }
 
 class FadingTextWorld extends StableText{
-  constructor(x, y, red, green, blue, alpha, content, timer, fadingPoint, fadingRate, end_function){
-    super(x, y, content, timer, end_function)
+  constructor(x, y, red, green, blue, alpha, content, timer, fadingPoint, fadingRate){
+    super(x, y, content, timer)
     this.x = x
     this.y = y
     this.content = content
@@ -114,16 +99,11 @@ class FadingTextWorld extends StableText{
     this.green = green
     this.blue = blue
     this.alpha = alpha
-    this.dying_action = end_function
-  }
-  endFunction(){
-    this.dying_action
   }
 
   update(delta){
     if(this.timer <= 0){
       if(this.dying_action != "none"){
-        this.endFunction()
       }
       this.delete = true
     }
