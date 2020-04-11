@@ -119,3 +119,23 @@ class FadingTextWorld extends StableText{
     ctx.fillText(this.content, this.x, this.y);
   }
 }
+
+class CountingText{
+  constructor(x,y,num){
+    var pos = game.camera.toWorldCoordinates(x,y);
+    this.x = pos.x
+    this.y = pos.y
+    this.final_num = num;
+    this.num = 0;
+    this.diff = num/100
+  }
+  update(delta){
+    if(this.num<this.final_num){
+      this.num+=5;
+    }
+  }
+  render(ctx){
+    ctx.font = "900 16px Arial";
+    ctx.fillText(this.num,this.x,this.y)
+  }
+}

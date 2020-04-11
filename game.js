@@ -167,6 +167,7 @@ function Game(context, width, height) {
               if(this.player.health<1){
                 pos = this.camera.toWorldCoordinates(0,0)
                 this.end_block = new EndBlock(this.points,pos.x,pos.y)
+                this.end_block.beginAnimation();
                 this.game_state = "game_over"
               }else{
                 this.quake(0.1);
@@ -273,17 +274,17 @@ function Game(context, width, height) {
              this.drawLives();
 
              if(!this.buff_indicating){
-               if(game.player.faster_shooting){
+               if(this.player.faster_shooting){
                  var text = new StableText(200, 100, "Faster Shooting", 500, "black")
                  this.texts.push(text)
                  this.buff_indicating = true
                  this.current_buff_duration = 500
-               }else if(game.player.faster_moving){
+               }else if(this.player.faster_moving){
                  var text = new StableText(200, 100, "Faster Moving", 800, "black")
                  this.texts.push(text)
                  this.buff_indicating = true
                  this.current_buff_duration = 800
-               }else if(game.player.invincibility){
+               }else if(this.player.invincibility){
                  var text = new StableText(200, 100, "Invincibility", 500, "black")
                  this.texts.push(text)
                  this.buff_indicating = true
@@ -407,6 +408,17 @@ window.onkeydown = function(e){
      }
      if(e.key=="1"||e.key=="2"||e.key=="3"||e.key=="4"||e.key=="5"){
    		  game.soundManager.playSound("weapon-switch")
+     }
+   }
+ }
+
+ window.onmousedown = function(e){
+   if(game.game_state=="playing"){
+     if(e.which == 1){
+       if(game.player.guns[game.player.current_gun_index].bullets_in_magazine == 0 && game.player.guns[game.player.current_gun_index].just_indicated_empty == false && game.sounds){
+         game.soundManager.playSound("empty-magazine-click")
+         game.player.guns[game.player.current_gun_index].just_indicated_empty = true
+       }
      }
    }
  }

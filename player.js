@@ -15,9 +15,9 @@ function Player(){
   this.inputManager = new InputManager(canvas);
 	this.health = 3;
 	this.just_changed_gun = false;
+	this.buff_in_progress = false
 	this.faster_shooting = false
 	this.buff_timer = 0
-	this.buff_in_progress = false
 	this.faster_moving = false
 	this.invincibility = false
 	this.gun_indicator_name = ""

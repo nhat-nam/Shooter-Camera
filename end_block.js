@@ -4,7 +4,17 @@ class EndBlock{
     this.y = y
     this.score = final_score
     this.texts = []
-    this.shake = true;
+    this.shake = false;;
+  }
+  shake(time){
+    this.shake = true
+    var e = this;
+    setTimeout(function(){
+      e.shake = false;
+    }, time);
+  }
+  beginAnimation(){
+    this.texts.push(new CountingText(240,240,this.score));
   }
 
   update(delta){
@@ -14,7 +24,6 @@ class EndBlock{
   }
   render(ctx){
     ctx.save()
-    ctx.fillStyle = "red"
     if(this.shake){
       var dx = Math.random()*16-8;
       var dy = Math.random()*16-8;
@@ -27,7 +36,9 @@ class EndBlock{
     ctx.restore()
   }
   drawObjects(){
+    ctx.fillStyle = "red"
     ctx.fillRect(this.x,this.y,500,500)
+    ctx.fillStyle = "black"
     for(var i=0;i<this.texts.length;i++){
       this.texts[i].render(ctx);
     }
