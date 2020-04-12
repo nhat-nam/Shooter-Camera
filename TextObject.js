@@ -131,11 +131,11 @@ class CountingText{
   }
   update(delta){
     if(this.num<this.final_num){
-      this.num+=5;
+      this.num+=this.diff;
     }
   }
   render(ctx){
     ctx.font = "900 16px Arial";
-    ctx.fillText(this.num,this.x,this.y)
+    ctx.fillText("Score: "+this.num,this.x,this.y)
   }
 }

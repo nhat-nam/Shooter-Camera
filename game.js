@@ -55,6 +55,8 @@ function Game(context, width, height) {
    this.soundManager.addSound("bullet-crate-ammunition-sound", document.getElementById("bullet-crate-ammo"));
    this.soundManager.addSound("weapon-switch", document.getElementById("weapon-switch"));
    this.soundManager.addSound("health-loss", document.getElementById("health-loss"));
+   this.soundManager.addSound("rifle-shot", document.getElementById("rifle-shot"));
+   this.soundManager.addSound("uzi-shot", document.getElementById("uzi-shot"));
 
 
    this.border_width = 5;

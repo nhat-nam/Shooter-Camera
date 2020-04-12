@@ -26,7 +26,7 @@ class SoundManager{
 			}
 		}
 
-		checkPlaying(key){
+		isPlaying(key){
 			if(!this.sounds[key].paused){
 				return true;
 			}else{

@@ -4,10 +4,10 @@ class EndBlock{
     this.y = y
     this.score = final_score
     this.texts = []
-    this.shake = false;;
+    this.shake = false;
   }
-  shake(time){
-    this.shake = true
+  quake(time){
+    this.shake = true;
     var e = this;
     setTimeout(function(){
       e.shake = false;
@@ -15,6 +15,7 @@ class EndBlock{
   }
   beginAnimation(){
     this.texts.push(new CountingText(240,240,this.score));
+    this.quake(500)
   }
 
   update(delta){

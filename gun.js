@@ -129,11 +129,21 @@ class Shotgun extends Gun{
       }
     }
 
+    shootSound(){
+      if(game.sounds == true){
+        if(game.soundManager.isPlaying("rifle-shot")){
+          game.soundManager.stopSound("rifle-shot")
+        }
+        game.soundManager.playSound("rifle-shot")
+      }
+    }
+
     shoot(x, y, angle, init_dx, init_dy){
       var bullets = [];
         var bullet = new Projectile(x, y, angle, init_dx, init_dy);
         bullets.push(bullet);
         this.bullets_in_magazine -= 1
+        this.shootSound();
         if(game.player.faster_shooting){
           this.shootCooldownTimer = 88
         }else{
@@ -154,7 +164,10 @@ class Shotgun extends Gun{
 
     shootSound(){
       if(game.sounds == true){
-
+        if(game.soundManager.isPlaying("uzi-shot")){
+          game.soundManager.stopSound("uzi-shot")
+        }
+        game.soundManager.playSound("uzi-shot")
       }
     }
     reloadSound(){
