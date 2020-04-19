@@ -57,6 +57,7 @@ function Game(context, width, height) {
    this.soundManager.addSound("health-loss", document.getElementById("health-loss"));
    this.soundManager.addSound("rifle-shot", document.getElementById("rifle-shot"));
    this.soundManager.addSound("uzi-shot", document.getElementById("uzi-shot"));
+   this.soundManager.addSound("digital_counting", document.getElementById("digital_counting"));
 
 
    this.border_width = 5;
@@ -172,7 +173,7 @@ function Game(context, width, height) {
                 this.end_block.beginAnimation();
                 this.game_state = "game_over"
               }else{
-                this.quake(0.1);
+                this.quake(0.2);
                 this.flash.flash(1,.025);
               }
               if(!this.soundManager.sounds["health-loss"].paused){
@@ -222,14 +223,14 @@ function Game(context, width, height) {
        this.ctx.save();
        this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
        if(this.shake){
-         var dx = Math.random()*16-8;
-         var dy = Math.random()*16-8;
+         var dx = Math.random()*30-15;
+         var dy = Math.random()*30-15;
          this.ctx.translate(dx, dy);
        }
-       this.drawWorldBorders();
-       this.drawWorldGrid();
 
        if(this.game_state=="playing"){
+         this.drawWorldBorders();
+         this.drawWorldGrid();
            //render the texts
            for(var i = 0; i < this.texts.length; i++){
              this.texts[i].render(this.ctx);

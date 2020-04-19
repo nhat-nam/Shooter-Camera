@@ -7,27 +7,32 @@ class EndBlock{
     this.shake = false;
   }
   quake(time){
-    this.shake = true;
-    var e = this;
-    setTimeout(function(){
-      e.shake = false;
-    }, time);
+    if(!this.shake){
+      this.shake = true;
+      var e = this;
+      setTimeout(function(){
+        e.shake = false;
+      }, time);
+    }
   }
   beginAnimation(){
-    this.texts.push(new CountingText(240,240,this.score));
-    this.quake(500)
+    this.quake(255);
+    this.texts.push(new CountingText(180,300,this.score));
+    this.texts.push(new AppearingText(100,200,"YOU DIED","VioletWasteland",.01))
   }
 
   update(delta){
-    for(var i=0;i<this.texts.length;i++){
-      this.texts[i].update(delta);
+    if(this.texts[1].delete){
+      this.texts[0].update(delta);
+    }else{
+      this.texts[1].update(delta);
     }
   }
   render(ctx){
     ctx.save()
     if(this.shake){
-      var dx = Math.random()*16-8;
-      var dy = Math.random()*16-8;
+      var dx = Math.random()*30-15;
+      var dy = Math.random()*30-15;
       ctx.translate(dx, dy);
     }
     this.drawObjects();

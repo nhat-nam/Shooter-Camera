@@ -24,10 +24,6 @@ class StableText{
 class FadingText extends StableText{
   constructor(x, y, red, green, blue, alpha, content, timer, fadingPoint, fadingRate){
     super(x, y, content, timer)
-    this.x = x
-    this.y = y
-    this.content = content
-    this.timer = timer
     this.timeToFade = fadingPoint
     this.fadingRate = fadingRate
     this.delete = false
@@ -72,12 +68,6 @@ class StableTextWorld extends StableText{
     this.delete = false
     this.color = color
   }
-  update(delta){
-    if(this.timer <= 0){
-      this.delete = true
-    }
-    this.timer--
-  }
   render(ctx){
     ctx.font = "900 16px Arial";
     ctx.fillStyle = this.color
@@ -120,6 +110,31 @@ class FadingTextWorld extends StableText{
   }
 }
 
+class AppearingText extends StableText{
+  constructor(x,y,content,font,appearingRate){
+    super(x,y,content)
+    this.font =font;
+    this.appearingRate = appearingRate;
+    this.alpha = 0;
+    this.delete = false
+  }
+
+  update(delta){
+    if(this.alpha<1){
+      this.alpha += this.appearingRate;
+    }
+    if(this.alpha >= 1){
+      this.delete = true;
+    }
+  }
+  render(ctx){
+    ctx.fillStyle = "rgba(0,0,0,"+this.alpha+")"
+    ctx.font = "1000 73px "+this.font;
+    var c_pos = game.camera.toWorldCoordinates(this.x,this.y);
+    ctx.fillText(this.content, c_pos.x, c_pos.y);
+  }
+}
+
 class CountingText{
   constructor(x,y,num){
     var pos = game.camera.toWorldCoordinates(x,y);
@@ -127,15 +142,24 @@ class CountingText{
     this.y = pos.y
     this.final_num = num;
     this.num = 0;
-    this.diff = num/100
+    this.diff = num/50
+    this.delete = false;
   }
   update(delta){
-    if(this.num<this.final_num){
-      this.num+=this.diff;
+    if(!this.delete){
+      if(this.num<this.final_num){
+        this.num+=this.diff;
+        if(game.soundManager.sounds["digital_counting"].currentTime>=game.soundManager.sounds["digital_counting"].duration*1/5){
+          game.soundManager.stopSound("digital_counting")
+        }
+        game.soundManager.playSound("digital_counting")
+      }else{
+        this.delete = true
+      }
     }
   }
   render(ctx){
-    ctx.font = "900 16px Arial";
+    ctx.font = "1000 22.5px TravelingTypewriter";
     ctx.fillText("Score: "+this.num,this.x,this.y)
   }
 }
