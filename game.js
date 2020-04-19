@@ -58,6 +58,7 @@ function Game(context, width, height) {
    this.soundManager.addSound("rifle-shot", document.getElementById("rifle-shot"));
    this.soundManager.addSound("uzi-shot", document.getElementById("uzi-shot"));
    this.soundManager.addSound("digital_counting", document.getElementById("digital_counting"));
+   this.soundManager.addSound("died", document.getElementById("you_died"));
 
 
    this.border_width = 5;
@@ -168,6 +169,7 @@ function Game(context, width, height) {
             if(!this.player.invincibility && this.player.health>0){
               this.player.health--;
               if(this.player.health<1){
+                this.soundManager.stopAllSounds();
                 pos = this.camera.toWorldCoordinates(0,0)
                 this.end_block = new EndBlock(this.points,pos.x,pos.y)
                 this.end_block.beginAnimation();

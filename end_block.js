@@ -17,6 +17,7 @@ class EndBlock{
   }
   beginAnimation(){
     this.quake(255);
+    game.soundManager.playSound("died");
     this.texts.push(new CountingText(180,300,this.score));
     this.texts.push(new AppearingText(100,200,"YOU DIED","VioletWasteland",.01))
   }
