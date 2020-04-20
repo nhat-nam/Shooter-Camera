@@ -224,13 +224,13 @@ function Game(context, width, height) {
        this.ctx.clearRect(0, 0, this.width, this.height);
        this.ctx.save();
        this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
-       if(this.shake){
-         var dx = Math.random()*30-15;
-         var dy = Math.random()*30-15;
-         this.ctx.translate(dx, dy);
-       }
 
        if(this.game_state=="playing"){
+         if(this.shake){
+           var dx = Math.random()*30-15;
+           var dy = Math.random()*30-15;
+           this.ctx.translate(dx, dy);
+         }
          this.drawWorldBorders();
          this.drawWorldGrid();
            //render the texts
