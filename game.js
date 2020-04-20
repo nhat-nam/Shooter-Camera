@@ -35,6 +35,7 @@ function Game(context, width, height) {
    this.camera = new Camera(1,1,500,500);
    this.flash = new Flash()
    this.end_block = null;
+   this.pause_block = new PauseBlock();
    this.inputManager = new InputManager(canvas);
    this.inputManager.listenForEvents();
    this.game_state = "playing"
@@ -210,6 +211,8 @@ function Game(context, width, height) {
       this.ticks++;
     }else if(this.game_state=="game_over"){
       this.end_block.update(delta)
+    }else if(this.game_state=="paused"){
+      this.pause_block.update(delta)
     }
 }
    /**
@@ -219,13 +222,15 @@ function Game(context, width, height) {
    **/
    this.render = function(){
 
-
-
        this.ctx.clearRect(0, 0, this.width, this.height);
        this.ctx.save();
        this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
+       if(this.game_state == "game_over"&&!this.shake){
+         this.end_block.render(ctx);
+       }else if(this.game_state == "instructions"){
 
-       if(this.game_state=="playing"){
+       }else{
+
          if(this.shake){
            var dx = Math.random()*30-15;
            var dy = Math.random()*30-15;
@@ -240,7 +245,7 @@ function Game(context, width, height) {
            this.player.render(this.ctx);
            //render flash
            if(this.flash.active){
-             this.flash.render(ctx)
+             this.flash.render(this.ctx)
            }
            // render the enemies
            for(var i = 0; i < this.enemies.length; i++){
@@ -296,12 +301,11 @@ function Game(context, width, height) {
                  this.current_buff_duration = 500
                }
              }
-           }
 
-
-           if(this.game_state == "game_over"&&!this.shake){
-             this.end_block.render(ctx);
-            }
+             if(this.game_state=="paused"){
+               this.pause_block.render(ctx)
+             }
+         }
 
            this.ctx.restore();
 
@@ -309,6 +313,15 @@ function Game(context, width, height) {
 
 
        }
+    this.pause = function(){
+      this.game_state="paused"
+      var pos = game.camera.toWorldCoordinates(0,0)
+      this.pause_block.enter(pos.x,pos.y);
+    }
+
+    this.unpause = function(){
+    }
+
     this.quake = function(sec){
       this.shake = true;
       var game = this
@@ -413,6 +426,9 @@ window.onkeydown = function(e){
      }
      if(e.key=="1"||e.key=="2"||e.key=="3"||e.key=="4"||e.key=="5"){
    		  game.soundManager.playSound("weapon-switch")
+     }
+     if(e.key=="Escape"){
+       game.pause();
      }
    }
  }

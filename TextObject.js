@@ -142,7 +142,7 @@ class CountingText{
     this.y = pos.y
     this.final_num = num;
     this.num = 0;
-    this.diff = num/50
+    this.diff = num/100;
     this.delete = false;
   }
   update(delta){
