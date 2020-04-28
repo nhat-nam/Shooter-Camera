@@ -34,11 +34,13 @@ function Game(context, width, height) {
    this.player = new Player();
    this.camera = new Camera(1,1,500,500);
    this.flash = new Flash()
-   this.end_block = null;
-   this.pause_block = new PauseBlock();
+   this.end_menu = new EndMenu();
+   this.pause_menu = new PauseMenu();
    this.inputManager = new InputManager(canvas);
    this.inputManager.listenForEvents();
    this.game_state = "playing"
+
+   //sounds
    this.soundManager = new SoundManager();
    this.soundManager.addSound("pistol-firing", document.getElementById("gun-boom"));
    this.soundManager.addSound("shotgun-firing", document.getElementById("shotgun-boom"));
@@ -74,6 +76,7 @@ function Game(context, width, height) {
    this.buff_indicating = false
    this.current_buff_duration = 0
    this.shake = false;
+   this.total_enemies = 0;
 
    // Enemy array
    this.enemies = [];
@@ -98,11 +101,12 @@ function Game(context, width, height) {
 
         // create
 
-        if(this.ticks % 80 == 0){
+        if(this.ticks % 80 == 0&&this.total_enemies<66){
           var x = this.randomNumberPick([this.randBetween(-100,this.player.x-250),this.randBetween(WIDTH+100,this.player.x+250)]);
           var y = this.randomNumberPick([this.randBetween(-100,this.player.y-250),this.randBetween(HEIGHT+100,this.player.y+250)]);
           var entity = new FollowingEnemy(x, y)
           this.enemies.push( entity );
+          this.total_enemies++;
         }
 
 
@@ -140,25 +144,23 @@ function Game(context, width, height) {
 
       //update all enemies
       for(var i = 0; i < this.enemies.length; i++){
-        this.enemies[i].update(delta);
         var enemy = this.enemies[i];
-
+        enemy.update(delta);
         //check if a bullet hits this enemy
         for(var j = 0; j < this.player.bullets.length; j++){
           if(!this.player.bullets[j].delete){
             if(enemy.intersects( this.player.bullets[j] )){
               if(this.player.current_gun_index != 4){
-                this.enemies.splice(i, 1);
+                enemy.fade();;
         				i--;
                 this.player.bullets[j].delete = true;
-                j = this.player.bullets.length;
               } else{
-                this.enemies.splice(i, 1);
+                enemy.fade();
                 i--;
-                j = this.player.bullets.length;
                 this.soundManager.playSound("death-by-lazer")
               }
                 this.points += 100
+              j = this.player.bullets.length;
             }
           }
         }
@@ -172,8 +174,7 @@ function Game(context, width, height) {
               if(this.player.health<1){
                 this.soundManager.stopAllSounds();
                 pos = this.camera.toWorldCoordinates(0,0)
-                this.end_block = new EndBlock(this.points,pos.x,pos.y)
-                this.end_block.beginAnimation();
+                this.end_menu.init(this.points,pos.x,pos.y)
                 this.game_state = "game_over"
               }else{
                 this.quake(0.2);
@@ -184,6 +185,7 @@ function Game(context, width, height) {
               }
               this.soundManager.playSound("health-loss")
             }
+            enemy.explode();
             enemy.ready_to_attack = false;
           }
         }else{
@@ -207,12 +209,17 @@ function Game(context, width, height) {
           this.enemies[i].player_x = this.player.x;
           this.enemies[i].player_y = this.player.y;
         }
+        //check if enemy is needed to be deleted
+        if(enemy.delete){
+          this.enemies.splice(i,1);
+          this.total_enemies--;
+        }
       }
       this.ticks++;
     }else if(this.game_state=="game_over"){
-      this.end_block.update(delta)
+      this.end_menu.update(delta)
     }else if(this.game_state=="paused"){
-      this.pause_block.update(delta)
+      this.pause_menu.update(delta)
     }
 }
    /**
@@ -226,7 +233,7 @@ function Game(context, width, height) {
        this.ctx.save();
        this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
        if(this.game_state == "game_over"&&!this.shake){
-         this.end_block.render(ctx);
+         this.end_menu.render(ctx);
        }else if(this.game_state == "instructions"){
 
        }else{
@@ -303,7 +310,7 @@ function Game(context, width, height) {
              }
 
              if(this.game_state=="paused"){
-               this.pause_block.render(ctx)
+               this.pause_menu.render(ctx)
              }
          }
 
@@ -316,10 +323,12 @@ function Game(context, width, height) {
     this.pause = function(){
       this.game_state="paused"
       var pos = game.camera.toWorldCoordinates(0,0)
-      this.pause_block.enter(pos.x,pos.y);
+      this.pause_menu.init(pos.x,pos.y);
+      this.soundManager.pauseAllSounds();
     }
-
     this.unpause = function(){
+      this.game_state = "playing"
+      this.soundManager.playAllPausedSounds();
     }
 
     this.quake = function(sec){
@@ -433,21 +442,21 @@ window.onkeydown = function(e){
    }
  }
 
- window.onmousedown = function(e){
+ window.onkeyup = function(e){
+   if(game.game_state == "playing"){
+     if(e.key == " "){
+       game.player.guns[game.player.current_gun_index].just_indicated_empty = false
+     }
+   }
+ }
+
+ window.onclick = function(e){
    if(game.game_state=="playing"){
      if(e.which == 1){
        if(game.player.guns[game.player.current_gun_index].bullets_in_magazine == 0 && game.player.guns[game.player.current_gun_index].just_indicated_empty == false && game.sounds){
          game.soundManager.playSound("empty-magazine-click")
          game.player.guns[game.player.current_gun_index].just_indicated_empty = true
        }
-     }
-   }
- }
-
- window.onkeyup = function(e){
-   if(game.game_state == "playing"){
-     if(e.key == " "){
-       game.player.guns[game.player.current_gun_index].just_indicated_empty = false
      }
    }
  }

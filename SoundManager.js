@@ -33,6 +33,20 @@ class SoundManager{
 			}
 		}
 
+		pauseAllSounds(){
+			for(var key in this.sounds){
+				this.sounds[key].pause();
+			}
+		}
+
+		playAllPausedSounds(){
+			for(var key in this.sounds){
+				if(this.sounds[key].currentTime!=0){
+					this.sounds[key].play()
+				}
+			}
+		}
+
 		isPlaying(key){
 			if(!this.sounds[key].paused){
 				return true;

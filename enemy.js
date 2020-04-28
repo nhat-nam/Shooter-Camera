@@ -19,15 +19,17 @@ class Enemy{
     //acceleration
     this.dxx = 0;
     this.dyy = 0;
-    // color
-		this.fillStyle = "red";
 
     this.ticks = 0;
     this.ready_to_attack = true
     this.waiting_to_attack = false;
     this.delete = false;
     this.name = ""
+    this.disappearing = false;
+    this.exploded = false;
+    this.alpha = 1;
 	}
+
   intersects(obj){
     // check if obj intersects with this Enemy
     if(obj.radius){
@@ -48,6 +50,7 @@ class Enemy{
       }
     }
     return false;
+
   }
   moveTowards(x, y){
     // calculate an x and y velocity for this enemy
@@ -70,33 +73,52 @@ class Enemy{
   entityNaming(){
     //defined in sublcasses
   }
+  customCheck(){
+    //defined in subclasses
+  }
+  explode(){
+    this.exploded = true;
+  }
+  fade(){
+    this.disappearing = true;
+  }
   update(delta){
+    if(this.exploded){
+      this.delete = true;
+    }else if(this.disappearing){
+      this.alpha-=.05;
+      if(this.alpha<=0){
+        this.delete = true;
+      }
+    }else{
+      // subclass methods
+      this.entityUpdate(delta);
+      this.entityNaming();
+      this.customCheck();
+      // update position
+      this.x = this.x + (this.dx * (delta/1000));
+      this.y = this.y + (this.dy * (delta/1000));
 
-    // subclass methods
-    this.entityUpdate(delta);
-    this.entityNaming();
-    // update position
-    this.x = this.x + (this.dx * (delta/1000));
-    this.y = this.y + (this.dy * (delta/1000));
+      // update velocity
+      this.dx = this.dx + (this.dxx * (delta/1000));
+      this.dy = this.dy + (this.dyy * (delta/1000));
 
-    // update velocity
-    this.dx = this.dx + (this.dxx * (delta/1000));
-    this.dy = this.dy + (this.dyy * (delta/1000));
+      this.ticks++;
 
-    this.ticks++;
-
-    if(this.ready_to_attack == false && this.waiting_to_attack == false){
-      this.waiting_to_attack = true;
-      var enemy = this;
-      setTimeout(500, function(){
-        enemy.ready_to_attack = true;
-        enemy.waiting_to_attack = false;
-      });
+      if(this.ready_to_attack == false && this.waiting_to_attack == false){
+        this.waiting_to_attack = true;
+        var enemy = this;
+        setTimeout(500, function(){
+          enemy.ready_to_attack = true;
+          enemy.waiting_to_attack = false;
+        });
+      }
     }
+
   }
   render(ctx){
     ctx.save();
-    ctx.fillStyle = this.fillStyle;
+    ctx.fillStyle = "rgba(255,0,0,"+this.alpha+")";
     ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.restore();
   }
@@ -112,7 +134,9 @@ class FollowingEnemy extends Enemy{
   entityNaming(){
     this.name = "following_enemy"
   }
+  customCheck(){
 
+  }
 }
 
 class ShooterEnemy extends Enemy{

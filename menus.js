@@ -1,4 +1,4 @@
-class PauseBlock{
+class PauseMenu{
   constructor(){
     this.x = 0
     this.y = 0
@@ -11,13 +11,14 @@ class PauseBlock{
     this.speed = 22
     this.inputManager = new InputManager(canvas);
     this.reset=false;
+    this.texts = []
   }
   checkUserInput(){
     if(this.inputManager.isKeyDown("Enter")){
       this.reset=true;
     }
   }
-  enter(x,y){
+  init(x,y){
     this.background_x = x-10;
     this.background_y = y-10;
     this.x = x+(500-this.length)/2
@@ -45,7 +46,7 @@ class PauseBlock{
       this.moving_down =true
       this.speed = 22
       this.reset=false;
-      game.game_state = "playing"
+      game.unpause();
     }
   }
   render(ctx){
@@ -69,5 +70,68 @@ class PauseBlock{
 		ctx.arcTo(this.x, this.y + this.width, this.x, this.y, 15);
 		ctx.arcTo(this.x, this.y , this.x + this.length, this.y, 15);
 		ctx.fill();
+  }
+}
+class EndMenu{
+  constructor(){
+    this.x = 0
+    this.y = 0
+    this.score = 0
+    this.width = 500
+    this.length = 500
+    this.texts = []
+    this.shake = false;
+    this.reset = false;
+  }
+  quake(time){
+    if(!this.shake){
+      this.shake = true;
+      var e = this;
+      setTimeout(function(){
+        e.shake = false;
+      }, time);
+    }
+  }
+  init(score,x,y){
+    this.score = score;
+    this.x = x
+    this.y = y
+    this.quake(255);
+    game.soundManager.playSound("died");
+    this.texts.push(new CountingText(180,300,this.score));
+    this.texts.push(new AppearingText(100,200,"YOU DIED","VioletWasteland",.01))
+  }
+
+  update(delta){
+    if(this.texts[1].delete){
+      this.texts[0].update(delta);
+    }else{
+      this.texts[1].update(delta);
+    }
+    if(this.reset){
+      this.reset = false;
+      this.texts.splice(0,this.texts.length)
+    }
+  }
+  render(ctx){
+    ctx.save()
+    if(this.shake){
+      var dx = Math.random()*30-15;
+      var dy = Math.random()*30-15;
+      ctx.translate(dx, dy);
+    }
+    this.drawObjects();
+    if(this.shake){
+      ctx.translate(-dx,-dy)
+    }
+    ctx.restore()
+  }
+  drawObjects(){
+    ctx.fillStyle = "red"
+    ctx.fillRect(this.x,this.y,this.length,this.width)
+    ctx.fillStyle = "black"
+    for(var i=0;i<this.texts.length;i++){
+      this.texts[i].render(ctx);
+    }
   }
 }
