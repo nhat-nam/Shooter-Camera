@@ -28,6 +28,7 @@ class Enemy{
     this.disappearing = false;
     this.exploded = false;
     this.alpha = 1;
+    this.particles = [];
 	}
 
   intersects(obj){

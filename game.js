@@ -414,7 +414,7 @@ function Game(context, width, height) {
 
    this.randomNumberPick = function(array_of_numbers){
      var amount_of_numbers = array_of_numbers.length
-     return array_of_numbers[Math.floor(Math.random(amount_of_numbers-1))]
+     return array_of_numbers[Math.floor(Math.random()*amount_of_numbers)]
    }
 }
 
