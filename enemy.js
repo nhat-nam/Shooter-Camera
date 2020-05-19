@@ -1,5 +1,7 @@
+SPEED_LIMIT = 200;
 class Enemy{
   constructor(x, y){
+
 
     //position
     this.x = x;
@@ -28,7 +30,6 @@ class Enemy{
     this.disappearing = false;
     this.exploded = false;
     this.alpha = 1;
-    this.particles = [];
 	}
 
   intersects(obj){
@@ -42,6 +43,20 @@ class Enemy{
         return true;
       }
     }else{
+      // for lazer....
+      if( lineLine(obj.x, obj.y, obj.x2, obj.y2,
+        this.x, this.y, this.x +this.width, this.y) ||
+          lineLine(obj.x, obj.y, obj.x2, obj.y2,
+        this.x, this.y, this.x, this.y + this.height) ||
+        lineLine(obj.x, obj.y, obj.x2, obj.y2,
+        this.x+this.width, this.y+this.height, this.x, this.y + this.height) ||
+        lineLine(obj.x, obj.y, obj.x2, obj.y2,
+        this.x+this.width, this.y+this.height, this.x+this.width, this.y) ){
+
+          return true;
+        }
+
+
       //obj width & height
       if(obj.x < this.x + this.width
         && obj.x + obj.width > this.x
@@ -83,7 +98,7 @@ class Enemy{
   fade(){
     this.disappearing = true;
   }
-  update(delta){
+  update(delta, enemies, index){
     if(this.exploded){
       this.delete = true;
     }else if(this.disappearing){
@@ -94,15 +109,72 @@ class Enemy{
     }else{
       // subclass methods
       this.entityUpdate(delta);
+
+      /*
+        check for proximity to others.
+      */
+
+
+      var accel_change = 30;
+
+      for( var i = index+1;i<enemies.length;i++){
+        /// check for proximity
+        var e_1 = enemies[i];
+        var dist = Math.sqrt(Math.pow((this.x +12.5 )- (e_1.x+12.5),2) + Math.pow((this.y+12.5)-(e_1.y+12.5),2) );
+        if(dist < this.width*4){
+
+          var dist_to_p = Math.sqrt(Math.pow((this.x +12.5 )- this.player_x,2) + Math.pow((this.y+12.5)-this.player_y,2) );
+          var dist_to_p_1 = Math.sqrt(Math.pow((e_1.x +12.5 )- this.player_x,2) + Math.pow((e_1.y+12.5)-this.player_y,2) );
+          if(dist_to_p < dist_to_p_1){
+            if(e_1.dx > 0){
+              e_1.dxx -=accel_change;
+            }else{
+              e_1.dxx +=accel_change;
+            }
+            if(e_1.dy > 0){
+              e_1.dyy -=accel_change;
+            }else{
+              e_1.dyy +=accel_change;
+            }
+          }else{
+            if(this.dx > 0){
+              this.dxx -=accel_change;
+            }else{
+              this.dxx +=accel_change;
+            }
+            if(this.dy > 0){
+              this.dyy -=accel_change;
+            }else{
+              this.dyy +=accel_change;
+            }
+          }
+        }
+      }
+
       this.entityNaming();
       this.customCheck();
-      // update position
-      this.x = this.x + (this.dx * (delta/1000));
-      this.y = this.y + (this.dy * (delta/1000));
 
       // update velocity
       this.dx = this.dx + (this.dxx * (delta/1000));
       this.dy = this.dy + (this.dyy * (delta/1000));
+
+      //limit speed
+      if(this.dx>=SPEED_LIMIT){
+        this.dx=SPEED_LIMIT;
+      }else if(this.dx<=-1*SPEED_LIMIT){
+        this.dx = -200;
+      }
+
+      if(this.dy>=SPEED_LIMIT){
+        this.dy=SPEED_LIMIT;
+      }else if(this.dy<=-1*SPEED_LIMIT){
+        this.dy = -1*SPEED_LIMIT;
+      }
+
+      // update position
+      this.x = this.x + (this.dx * (delta/1000));
+      this.y = this.y + (this.dy * (delta/1000));
+
 
       this.ticks++;
 
@@ -175,4 +247,22 @@ class ShooterEnemy extends Enemy{
 		ctx.closePath();
     ctx.restore();
   }
+}
+
+
+function lineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
+
+  // calculate the direction of the lines
+   uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+   uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1));
+
+  // if uA and uB are between 0-1, lines are colliding
+  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+
+    // optionally, draw a circle where the lines meet
+     intersectionX = x1 + (uA * (x2-x1));
+     intersectionY = y1 + (uA * (y2-y1));
+    return true;
+  }
+  return false;
 }

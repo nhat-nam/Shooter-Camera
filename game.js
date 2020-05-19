@@ -33,7 +33,6 @@ function Game(context, width, height) {
    this._prevTime = 0;
    this.player = new Player();
    this.camera = new Camera(1,1,500,500);
-   this.flash = new Flash()
    this.end_menu = new EndMenu();
    this.pause_menu = new PauseMenu();
    this.inputManager = new InputManager(canvas);
@@ -87,6 +86,9 @@ function Game(context, width, height) {
    //Texts array
    this.texts = []
 
+   //flashes array
+   this.flashes = [];
+
 
 
    /**
@@ -97,10 +99,7 @@ function Game(context, width, height) {
      if(this.game_state == "playing"){
        this.player.update(delta);
 
-
-
         // create
-
         if(this.ticks % 80 == 0&&this.total_enemies<66){
           var x = this.randomNumberPick([this.randBetween(-100,this.player.x-250),this.randBetween(WIDTH+100,this.player.x+250)]);
           var y = this.randomNumberPick([this.randBetween(-100,this.player.y-250),this.randBetween(HEIGHT+100,this.player.y+250)]);
@@ -108,7 +107,6 @@ function Game(context, width, height) {
           this.enemies.push( entity );
           this.total_enemies++;
         }
-
 
         if(this.ticks % 1500  == 0 && this.bullet_crate_counter < 3){
           var bullet_box = new BulletCrate(Math.random() * WIDTH , Math.random() * HEIGHT)
@@ -119,9 +117,11 @@ function Game(context, width, height) {
           var buff_box = new BuffCrate(Math.random() * WIDTH, Math.random() * HEIGHT)
           this.crates.push(buff_box)
         }
-      //update Flash
-      if(this.flash.active){
-        this.flash.update(delta)
+      //update flash
+      if(this.flashes.length!=0){
+        for(var i = 0; i < this.flashes.length; i++){
+          this.flashes[i].update(delta)
+        }
       }
 
       // update all texts
@@ -145,26 +145,25 @@ function Game(context, width, height) {
       //update all enemies
       for(var i = 0; i < this.enemies.length; i++){
         var enemy = this.enemies[i];
-        enemy.update(delta);
-        //check if a bullet hits this enemy
-        for(var j = 0; j < this.player.bullets.length; j++){
-          if(!this.player.bullets[j].delete){
-            if(enemy.intersects( this.player.bullets[j] )){
-              if(this.player.current_gun_index != 4){
-                enemy.fade();;
-        				i--;
-                this.player.bullets[j].delete = true;
-              } else{
-                enemy.fade();
-                i--;
-                this.soundManager.playSound("death-by-lazer")
+        enemy.update(delta, this.enemies, i);
+          //check if a bullet hits this enemy
+          for(var j = 0; j < this.player.bullets.length; j++){
+            if(!this.player.bullets[j].delete){
+              if(enemy.intersects( this.player.bullets[j] )){
+                if(!enemy.disappearing){
+                  this.points += 100
+                }
+                if(this.player.current_gun_index != 4){
+                  enemy.fade();
+                  this.player.bullets[j].delete = true;
+                } else{
+                  enemy.fade();
+                  this.soundManager.playSound("death-by-lazer")
+                }
+                j = this.player.bullets.length;
               }
-                this.points += 100
-              j = this.player.bullets.length;
             }
           }
-        }
-
         // check player and enemy interaction
         if(enemy.name == "following_enemy"){
           if(enemy.intersects(this.player) && enemy.ready_to_attack){
@@ -178,7 +177,7 @@ function Game(context, width, height) {
                 this.game_state = "game_over"
               }else{
                 this.quake(0.2);
-                this.flash.flash(1,.025);
+                this.flash(250,250,500,1,.02);
               }
               if(!this.soundManager.sounds["health-loss"].paused){
                 this.soundManager.stopSound("health-loss");
@@ -213,6 +212,7 @@ function Game(context, width, height) {
         if(enemy.delete){
           this.enemies.splice(i,1);
           this.total_enemies--;
+           i--;
         }
       }
       this.ticks++;
@@ -250,9 +250,11 @@ function Game(context, width, height) {
              this.texts[i].render(this.ctx);
            }
            this.player.render(this.ctx);
-           //render flash
-           if(this.flash.active){
-             this.flash.render(this.ctx)
+           //render flashes
+           if(this.flashes.length!=0){
+             for(var i = 0; i < this.flashes.length; i++){
+               //this.flashes[i].render(ctx)
+             }
            }
            // render the enemies
            for(var i = 0; i < this.enemies.length; i++){
@@ -320,6 +322,9 @@ function Game(context, width, height) {
 
 
        }
+    this.flash = function(x,y,radius,alpha,subtraction){
+      this.flashes.push(new Flash(x,y,radius,subtraction));
+    }
     this.pause = function(){
       this.game_state="paused"
       var pos = game.camera.toWorldCoordinates(0,0)
@@ -414,7 +419,9 @@ function Game(context, width, height) {
 
    this.randomNumberPick = function(array_of_numbers){
      var amount_of_numbers = array_of_numbers.length
-     return array_of_numbers[Math.floor(Math.random()*amount_of_numbers)]
+     return array_of_numbers[
+       Math.floor( Math.random()*(amount_of_numbers) )
+       ];
    }
 }
 

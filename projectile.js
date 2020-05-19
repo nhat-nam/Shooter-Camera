@@ -56,7 +56,9 @@ class LazerProjectile{
     this.height = 710
     this.width = 0
     this.expanding = true
-    this.delete = false
+    this.delete = false;
+    this.x2 = 2000 * Math.cos(this.angle) + x;
+    this.y2 = 2000 * Math.sin(this.angle) + y;
   }
 
   update(delta){
@@ -64,9 +66,9 @@ class LazerProjectile{
       this.width++
     }else if(this.width >= 20){
       this.expanding = false
-      this.width--
+      this.width--;
     }else if(this.width < 20 && !this.expanding){
-      this.width--
+      this.width--;
     }
 
     if(this.width == 0 && !this.expanding){
@@ -77,9 +79,13 @@ class LazerProjectile{
   render(ctx){
     ctx.save();
     ctx.fillStyle = "rgba(0,0,255,.7)";
-    ctx.translate(this.x + this.width/2, this.y + this.height/2)
-    ctx.rotate(this.angle)
-    ctx.fillRect( -1 * this.width/2, -1*this.height/2, this.width, this.height)
+    ctx.strokeStyle = "rgba(0,0,255,.7)";
+
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.lineWidth=this.width;
+    ctx.stroke();
     ctx.restore();
   }
 }

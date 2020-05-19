@@ -25,6 +25,9 @@ class Gun{
       return true;
     }
   }
+  flash(x,y,radius,alpha,subtraction){
+
+  }
   reloadSound(){
     if(game.sounds == true){
       game.soundManager.playSound("pistol-reloading")
@@ -56,6 +59,7 @@ class Gun{
         this.shootCooldownTimer = 500
       }
       this.shootSound();
+      this.flash(x,y,4,1,.02);
       return bullets;
 
   }
