@@ -121,6 +121,9 @@ function Game(context, width, height) {
       if(this.flashes.length!=0){
         for(var i = 0; i < this.flashes.length; i++){
           this.flashes[i].update(delta)
+          if(this.flashes[i].delete){
+            this.flashes.splice(i,1)
+          }
         }
       }
 
@@ -177,7 +180,13 @@ function Game(context, width, height) {
                 this.game_state = "game_over"
               }else{
                 this.quake(0.2);
-                this.flash(250,250,500,1,.02);
+                this.flash(
+                  game.camera.x+game.camera.width/2,
+                  game.camera.y+game.camera.height/2,
+                  1000,
+                  1,
+                  .02
+                );
               }
               if(!this.soundManager.sounds["health-loss"].paused){
                 this.soundManager.stopSound("health-loss");
@@ -232,6 +241,7 @@ function Game(context, width, height) {
        this.ctx.clearRect(0, 0, this.width, this.height);
        this.ctx.save();
        this.ctx.translate(-1*this.camera.x, -1*this.camera.y);
+
        if(this.game_state == "game_over"&&!this.shake){
          this.end_menu.render(ctx);
        }else if(this.game_state == "instructions"){
@@ -253,7 +263,7 @@ function Game(context, width, height) {
            //render flashes
            if(this.flashes.length!=0){
              for(var i = 0; i < this.flashes.length; i++){
-               //this.flashes[i].render(ctx)
+               this.flashes[i].render(ctx)
              }
            }
            // render the enemies
@@ -322,8 +332,12 @@ function Game(context, width, height) {
 
 
        }
-    this.flash = function(x,y,radius,alpha,subtraction){
-      this.flashes.push(new Flash(x,y,radius,subtraction));
+    this.flash = function(x,y,radius,alpha,subtraction, flash_type){
+      if(flash_type && flash_type=="muzzle"){
+        this.flashes.push(new MuzzleFlash(x,y,radius,alpha, subtraction));
+      }else{
+        this.flashes.push(new Flash(x,y,radius,alpha, subtraction));
+      }
     }
     this.pause = function(){
       this.game_state="paused"

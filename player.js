@@ -1,3 +1,57 @@
+  /*
+
+
+            U
+            ^
+         UL |  x UR
+        <------->   
+         DL |  DR
+            V
+            D
+
+    Sprite
+
+    SpriteFrame
+      img
+    
+    SpriteAnimation
+      images and times
+      @ SPECIFIC TIME switch the current sprite frame
+
+    0s img0, .345 img1, .7 img2, 1s img0
+  
+  Sprite
+    render(){}
+  SpriteAnimation
+
+    render(){
+      current_sprite.render();
+    }
+    time_running = 0
+    current_sprite = sprites[current_sprite_index];
+    current_sprite.time_running > current_sprite.duration....then switch sprites
+    curretn_sprite_index++; //make sure we didn't go out of boudsn...if so set to 0
+    current_sprite = sprites[].
+
+    sprites[    
+      {
+        duration: .345
+        img: img0
+      },
+      {
+        duration: .355
+        img: img1
+      },
+      {
+        duration: .3,
+        img: img2
+      }
+    ]
+
+*/
+
+
+
 function Player(){
 
 	this.x = 250;

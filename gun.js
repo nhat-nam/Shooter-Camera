@@ -25,8 +25,54 @@ class Gun{
       return true;
     }
   }
-  flash(x,y,radius,alpha,subtraction){
+  flash(x,y,angle, radius,alpha,time){
+    /// adjust x, y so that it's at the tip of the gun....
+    
+    x = x + Math.cos(angle) * 5;
+    y = y + Math.sin(angle) * 5;
 
+/*
+          |
+          90  (0,1)
+          |  *
+          |  |    x
+-- 180----8---      --0/360/720/1080   (1, 0)
+          |    x
+          |  x
+         270  (0, -1)
+          |     
+                  *
+                 /|
+                / |
+               /  |
+           1  /   | y
+             /    |              *
+            /     |             /|
+           / T    |            / |
+          8-------|           8---
+              x
+
+          sin(T) = Opposite / Hypotenuse 
+          cos(T) = Adjacent / Hypotenuse
+
+
+          x = x + Math.cos(angle) * radius;
+
+
+
+               x   1   x
+                x     x x
+   ------------|-x---x---x----     
+                  x x     x
+                   x  -1   x
+
+    cos (angle) will equal the X value of that angle on the unit circle
+
+    sin (angle) will equal the Y value of that angle on the unit circle
+
+*/
+    // then create a new Flash object
+    game.flash(x,y,radius,alpha, time,"muzzle");
   }
   reloadSound(){
     if(game.sounds == true){
@@ -59,7 +105,7 @@ class Gun{
         this.shootCooldownTimer = 500
       }
       this.shootSound();
-      this.flash(x,y,4,1,.02);
+      this.flash(x,y,angle,9.5,1,3);
       return bullets;
 
   }
@@ -114,6 +160,7 @@ class Shotgun extends Gun{
       }
       this.bullets_in_magazine -= 1
       this.shootSound();
+      this.flash(x,y,angle,11.5,1,3.5);
       return bullets;
     }
   }
@@ -154,6 +201,7 @@ class Shotgun extends Gun{
           this.shootCooldownTimer = 110
 
         }
+        this.flash(x,y,angle,10.5,1,3);
         return bullets;
 
     }
@@ -191,6 +239,7 @@ class Shotgun extends Gun{
           this.shootCooldownTimer = 60
         }
         this.shootSound();
+        this.flash(x,y,angle,9.5,1,3);
         return bullets;
     }
 }
